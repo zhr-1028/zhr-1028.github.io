@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>我的技术与生活——使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息 | zhr&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>
+    document.title = `我的技术与生活——使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息`
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div>
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="https://zhr-1028.github.io/zhr-1028.github.io/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/zhr-1028.github.io/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/zhr-1028.github.io/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/zhr-1028.github.io/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Hello World","path":"2025/01/25/hello-world/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">Cola.</p>
+        <div class="main-left--tags">
+          <span class="main-left--tag">中二</span>
+          <span class="main-left--tag">宅</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“花有重开日，人无再少年”</p>
+        <p>“一个简单普通的男孩”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/Aizener"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>0</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>0</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>2 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>3 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>4天前</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>1096天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v1.0.2</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <link rel="stylesheet" href="/css/partial/article.css" />
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            
+          </div>
+          
+          <p class="article-info--date">日期：2025-02-11 19:52:04</p>
+        </div>
+        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content markdown-body">
+      <hr>
+<p>date: 2025-02-11 19:52:04<br>tags:<br>-相关内容</p>
+<h2 id="一，使用labelimg制作数据集"><a href="#一，使用labelimg制作数据集" class="headerlink" title="一，使用labelimg制作数据集"></a>一，使用labelimg制作数据集</h2><p>1.anoconda虚拟环境下使用 <code>pip install labelimg </code>安装labelimg工具输入labelimg打开软件，接下来可以对图片进行标志并生成相关格式标签文件</p>
+<p>2.数据集文件夹包含以下3类文件<br><img src="/../image/7.png"></p>
+<p>class相关类名<br>image文件夹里是划分好的train集和val集<br>lable文件夹里也是划分好的train集和val集</p>
+<h2 id="二，YOLOv11训练模型"><a href="#二，YOLOv11训练模型" class="headerlink" title="二，YOLOv11训练模型"></a>二，YOLOv11训练模型</h2><p>1.可以anoconda搭载好环境包含ultralytics,python版本不能较老，集安装好pytorch,电脑有gpu可以下gpu版本训练快很多<br>1.在github官网下载对应版本ultralytics及yolov11n.pt文件<br>用pycharm等打开ultralytics项目</p>
+<p>2.yaml中填写好相关路径<br><img src="/../image/8.png"></p>
+<p>3.创建train.py文件写训练代码如<br><img src="/../image/9.png"></p>
+<p>4.运行代码，等待训练结束<br>生成的runs文件夹里含训练出的模型权重文件best.pt</p>
+<h2 id="三，PyQt6开发界面及编写代码"><a href="#三，PyQt6开发界面及编写代码" class="headerlink" title="三，PyQt6开发界面及编写代码"></a>三，PyQt6开发界面及编写代码</h2><p>1.搭载好pyqt6及pyqt6-tools环境</p>
+<p>2.打开QTdesiger设计<br>包含两个pushButton组件分别实现文件上传功能及电脑摄像头开关功能<br>objectName分别为uploadButton，cameraButton（代码中会引用这些属性）<br>一个Qtextedit组件objectName：statusTextEdit来呈现统计信息<br>一个Qlabel组件，objectName：resultLabel展示图片或视频标注结果<br>可用一些设计美化界面<br><img src="/../image/10.png"></p>
+<h2 id="四，代码"><a href="#四，代码" class="headerlink" title="四，代码"></a>四，代码</h2><p>1.所需相关模块<br>import sys ：sys.argv：用于获取命令行参数，在 QApplication(sys.argv) 中，将命令行参数传递给 QApplication<br>sys.exit(app.exec())：用于在应用程序结束时退出 Python 解释器</p>
+<p>import cv2 ：cv2.VideoCapture：用于打开视频文件或摄像头设备，如 cv2.VideoCapture(self.file_path) 用于打开视频文件，cv2.VideoCapture(0) 用于打开默认摄像头。<br>cap.read()：从视频文件或摄像头中读取一帧图像。</p>
+<p>from ultralytics import YOLO ：self.model &#x3D; YOLO(‘best.pt’) 加载了YOLO 模型，对图像和视频帧进行目标检测，如 results &#x3D; self.model(frame)。</p>
+<p>from PyQt6 import uic：加载 QtDesigner 创建的 UI 文件。在代码中，uic.loadUi(‘task3.ui’, self) 加载名为 task3.ui 的 UI 文件到 MainWindow 类中。</p>
+<p>from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog<br>QApplication：应用程序的控制和设置<br>QWidget：用于创建自定义的窗口界面，MainWindow类继承自QWidget<br>QFileDialog：实现打开文件功能，连接pushbutton</p>
+<p>from PyQt6.QtGui import QPixmap, QImage<br>QPixmap:显示图像 （QLabel）<br>QImage:处理和操作图像数据</p>
+<p>from PyQt6.QtCore import QThread, pyqtSignal<br>QThread：QThread 创建多线程，我创建了VideoThread 和 CameraThread ，继承于QThread，在后台处理视频和摄像头数据。<br> pyqtSignal：不同线程之间传递信号，frame_processed &#x3D; pyqtSignal(object, object) 定义了一个信号，用于传递处理后的帧和统计信息。</p>
+<p> from PyQt6.QtCore import QResource：运行二进制资源文件，<br> 我使用了.qrc文件提供图片，<code>$ &quot;相关路径\Lib\site-packages\qt6_applications\Qt\bin\rcc.exe&quot; &quot;-binary&quot; &quot;1.qrc&quot; &quot;-o&quot; &quot;1.rcc&quot;</code>命令把.qrc编译成二进制<br>  <code>QResource.registerResource(&#39;.rcc&#39;)</code>代码实现图片展示功能</p>
+<p>2.相关类<br>VideoThread<br>pythonclass VideoThread(QThread):<br>    frame_processed &#x3D; pyqtSignal(object, object)<br>    def <strong>init</strong>(self, file_path, model):<br>        …<br>    def reset_counts(self):<br>        …<br>    def run(self):<br>        …<br>    def stop(self):<br>        …<br>继承自 QThread，用于在后台处理视频文件。其主要功能包括：<br>初始化时接收视频文件路径和 YOLO 模型。<br>run 方法会逐帧读取视频文件，使用 YOLO 模型进行目标检测，统计目标数量，并通过 frame_processed 信号将处理后的帧和统计信息发送出去。<br>stop 方法用于停止线程的运行。<br>CameraThread<br>class CameraThread(QThread):<br>    frame_processed &#x3D; pyqtSignal(object, object)<br>    def <strong>init</strong>(self, model):<br>        …<br>    def reset_counts(self):<br>        …<br>    def run(self):<br>        …<br>    def stop(self):<br>        …<br>继承自 QThread，用于处理摄像头的实时视频流</p>
+<p>run 方法会逐帧读取视频文件，使用 YOLO 模型进行目标检测，统计目标数量，并通过 frame_processed 信号将处理后的帧和统计信息发送出去。<br>stop 方法用于停止线程的运行</p>
+<p>3.主窗口class MainWindow(QWidget):<br>def <strong>init</strong>(self):<br>        …</p>
+<p>def openfile(self):<br>        …</p>
+<p>def process_image(self, file_path):<br>        …</p>
+<p>def process_video(self, file_path):<br>        …</p>
+<p>def update_frame(self, annotated_frame, status_text):<br>        …</p>
+<p>def toggle_camera(self):<br>        …</p>
+<p>def closeEvent(self, event):<br>        …<br>继承自 QWidget：<strong>init</strong> 方法：加载 UI 连接按钮的点击事件<br>openfile方法：打开文件选择界面<br>process_image 方法：对用户选择的图像文件进行目标检测，将检测结果显示在界面上，并更新统计信息。<br>process_video 方法：停止之前的视频处理线程和摄像头线程，创建并启动新的视频处理线程。<br>update_frame方法：接收处理后的帧和统计信息：切换摄像头的启动和停止状态<br>closeEvent 方法：在关闭窗口时停止所有正在运行的线程。</p>
+<p>4.主程序<br>if <strong>name</strong> &#x3D;&#x3D; ‘<strong>main</strong>‘:<br>    app &#x3D; QApplication(sys.argv)<br>    window &#x3D; MainWindow()<br>    window.show()<br>    sys.exit(app.exec())</p>
+<h2 id="五，功能展示"><a href="#五，功能展示" class="headerlink" title="五，功能展示"></a>五，功能展示</h2><p><img src="/../image/11.png" alt="一些文件"></p>
+<p><img src="/../image/12.png" alt="一些文件"></p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code class="import">import warnings
+import cv2
+from PyQt6 import uic
+from PyQt6.QtWidgets import QApplication, QWidget, QFileDialog
+from PyQt6.QtGui import QPixmap, QImage
+from PyQt6.QtCore import QThread, pyqtSignal
+from ultralytics import YOLO
+from PyQt6.QtCore import QResource
+warnings.filterwarnings(&quot;ignore&quot;, category=DeprecationWarning)  # 忽略警告
+
+class VideoThread(QThread):
+    frame_processed = pyqtSignal(object, object)  # 信号：传递处理后的帧和统计信息
+    def __init__(self, file_path, model):
+        super().__init__()
+        self.file_path = file_path
+        self.model = model
+        self.reset_counts()
+        self.running = True
+
+    def reset_counts(self):
+        #重置目标数量统计信息
+        self.class_counts = &#123;&#125;
+
+    def run(self):
+        self.reset_counts()
+        cap = cv2.VideoCapture(self.file_path)
+        if not cap.isOpened():
+            print(&quot;Failed to open video file&quot;)
+            return
+        while self.running:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            results = self.model(frame)
+            annotated_frame = results[0].plot()  # 绘制检测结果
+            # 目标统计
+            class_names = results[0].names
+            self.class_counts = &#123;&#125;  # 重置统计信息
+            for cls in results[0].boxes.cls.cpu().numpy():
+                cls_name = class_names[int(cls)]
+                if cls_name in self.class_counts:
+                    self.class_counts[cls_name] += 1
+                else:
+                    self.class_counts[cls_name] = 1
+            status_text = &quot;\n&quot;.join([f&quot;&#123;name&#125;: &#123;count&#125;&quot; for name, count in self.class_counts.items()])
+
+            self.frame_processed.emit(annotated_frame, status_text)  # 发送处理后的帧和统计信息
+            self.msleep(30)  # 每 30 毫秒处理一帧
+
+        cap.release()
+
+    def stop(self):
+        self.running = False
+        self.wait()
+
+
+class CameraThread(QThread):
+    frame_processed = pyqtSignal(object, object)  # 信号：传递处理后的帧和统计信息
+
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+        self.reset_counts()
+        self.running = True
+
+    def reset_counts(self):
+        self.class_counts = &#123;&#125;
+
+    def run(self):
+        self.reset_counts()
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            print(&quot;Failed to open camera&quot;)
+            return
+        print(&quot;Camera opened successfully&quot;)
+        while self.running:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            results = self.model(frame)
+            annotated_frame = results[0].plot()  # 绘制检测结果
+            class_names = results[0].names
+            self.class_counts = &#123;&#125;  # 重置统计信息
+            for cls in results[0].boxes.cls.cpu().numpy():
+                cls_name = class_names[int(cls)]
+                if cls_name in self.class_counts:
+                    self.class_counts[cls_name] += 1
+                else:
+                    self.class_counts[cls_name] = 1
+            status_text = &quot;\n&quot;.join([f&quot;&#123;name&#125;: &#123;count&#125;&quot; for name, count in self.class_counts.items()])
+
+            self.frame_processed.emit(annotated_frame, status_text)  # 发送处理后的帧和统计信息
+            self.msleep(30)  # 每 30 毫秒处理一帧
+        cap.release()
+
+    def stop(self):
+        self.running = False
+        self.wait()
+
+
+class MainWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi(&#39;task3.ui&#39;, self)# 加载 UI 文件
+        self.model = YOLO(&#39;best.pt&#39;)
+        self.uploadButton.clicked.connect(self.openfile)
+        self.cameraButton.clicked.connect(self.toggle_camera)  # 新增摄像头按钮点击事件
+        self.video_thread = None  # 视频处理线程
+        self.camera_thread = None  # 摄像头处理线程
+        self.camera_running = False  # 摄像头是否正在运行的标志
+
+    def openfile(self):
+        if self.camera_thread and self.camera_running:
+            self.toggle_camera()  # 停止摄像头
+        file_path, _ = QFileDialog.getOpenFileName(self, &#39;选择文件&#39;, &#39;&#39;,
+                                                   &#39;图片和视频文件 (*.jpg *.png *.mp4 *.webp *.wmv *.bmp *.jpeg *.gif *.avi *.mkv *.flv *.rmvb *.tiff *.mov *.m4v *.3gp *.jfif *.heic)&#39;)
+        if file_path:
+            # 定义图片文件扩展名元组，添加新的扩展名
+            image_extensions = (&#39;.jpg&#39;, &#39;.png&#39;, &#39;.webp&#39;, &#39;.bmp&#39;, &#39;.jpeg&#39;, &#39;.gif&#39;, &#39;.tiff&#39;, &#39;.jfif&#39;, &#39;.heic&#39;)
+            # 定义视频文件扩展名元组，添加新的扩展名
+            video_extensions = (&#39;.mp4&#39;, &#39;.wmv&#39;, &#39;.avi&#39;, &#39;.mkv&#39;, &#39;.flv&#39;, &#39;.rmvb&#39;, &#39;.mov&#39;, &#39;.m4v&#39;, &#39;.3gp&#39;)
+            if file_path.lower().endswith(image_extensions):
+                self.process_image(file_path)
+            elif file_path.lower().endswith(video_extensions):
+                self.process_video(file_path)
+
+    def process_image(self, file_path):
+        results = self.model(file_path)
+        annotated_frame = results[0].plot()
+        height, width, channel = annotated_frame.shape
+        bytes_per_line = 3 * width
+        q_img = QImage(annotated_frame.data, width, height, bytes_per_line, QImage.Format.Format_BGR888)
+        pixmap = QPixmap.fromImage(q_img)
+        self.resultLabel.setPixmap(pixmap.scaled(self.resultLabel.width(), self.resultLabel.height()))
+
+        class_names = results[0].names  # 统计信息
+        class_counts = &#123;&#125;
+        for cls in results[0].boxes.cls.cpu().numpy():
+            cls_name = class_names[int(cls)]
+            if cls_name in class_counts:
+                class_counts[cls_name] += 1
+            else:
+                class_counts[cls_name] = 1
+        status_text = &quot;\n&quot;.join([f&quot;&#123;name&#125;: &#123;count&#125;&quot; for name, count in class_counts.items()])
+        self.statusTextEdit.setPlainText(status_text)
+
+    def process_video(self, file_path):
+        if self.video_thread:
+            self.video_thread.stop()  # 停止上一个线程
+        if self.camera_thread and self.camera_running:
+            self.toggle_camera()  # 停止摄像头
+
+        # 创建并启动视频处理线程
+        self.video_thread = VideoThread(file_path, self.model)
+        self.video_thread.frame_processed.connect(self.update_frame)
+        self.video_thread.start()
+
+    def update_frame(self, annotated_frame, status_text):
+        try:
+            height, width, channel = annotated_frame.shape# 将 OpenCV 帧转换为 QImage
+            bytes_per_line = 3 * width
+            q_img = QImage(annotated_frame.data, width, height, bytes_per_line, QImage.Format.Format_BGR888)
+            pixmap = QPixmap.fromImage(q_img)  # 将 QImage 转换为 QPixmap 并显示
+            if pixmap.isNull():
+                print(&quot;Pixmap is null!&quot;)
+            else:
+                self.resultLabel.setPixmap(pixmap.scaled(self.resultLabel.width(), self.resultLabel.height()))
+            self.statusTextEdit.setPlainText(status_text)
+        except Exception as e:
+            print(f&quot;Error updating frame: &#123;e&#125;&quot;)
+
+    def toggle_camera(self):
+        if self.camera_running:
+            # 停止摄像头
+            self.camera_thread.stop()
+            self.camera_thread = None
+            self.camera_running = False
+            self.cameraButton.setText(&quot;启动摄像头&quot;)
+        else:
+            # 启动摄像头
+            if self.video_thread:
+                self.video_thread.stop()  # 停止视频处理线程
+            self.camera_thread = CameraThread(self.model)
+            self.camera_thread.frame_processed.connect(self.update_frame)
+            self.camera_thread.start()
+            self.camera_running = True
+            self.cameraButton.setText(&quot;停止摄像头&quot;)
+
+    def closeEvent(self, event):     #关闭窗口时停止所有线程
+        if self.video_thread:
+            self.video_thread.stop()
+        if self.camera_thread:
+            self.camera_thread.stop()
+        event.accept()
+
+if __name__ == &#39;__main__&#39;:
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    QResource.registerResource(&#39;1.rcc&#39;)
+    window.show()
+    sys.exit(app.exec())```
+</code></pre>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8C%E4%BD%BF%E7%94%A8labelimg%E5%88%B6%E4%BD%9C%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">一，使用labelimg制作数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%EF%BC%8CYOLOv11%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">二，YOLOv11训练模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%EF%BC%8CPyQt6%E5%BC%80%E5%8F%91%E7%95%8C%E9%9D%A2%E5%8F%8A%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">三，PyQt6开发界面及编写代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%EF%BC%8C%E4%BB%A3%E7%A0%81"><span class="toc-number">4.</span> <span class="toc-text">四，代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%EF%BC%8C%E5%8A%9F%E8%83%BD%E5%B1%95%E7%A4%BA"><span class="toc-number">5.</span> <span class="toc-text">五，功能展示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text">完整代码</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2025/01/25/hexo框架搭建个人博客并部署到github/">如何利用hexo框架在github上搭建个人博客</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: '2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="main-right--content">
+      Hello~大噶好。唔系可乐爱宅着，欢迎你们来到我的博客小站，希望能在这里收获到有用的东西哦！ 
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+      <p>Theme：<a target="_blank" rel="noopener" href="https://github.com/Aizener/hexo-theme-cola">Cola.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index">蜀ICP备2022005384号-1</a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"安河桥","artist":"宋冬野","url":"http://ting6.yymp3.net:82/new25/songdongye/11.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"卡布达","artist":"暂无","url":"music/kabuda.mp3","cover":"https://img2.baidu.com/it/u=705831265,2862720033&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+
+  <script>
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      const path = location.pathname.replace(rootPath, '');
+      if (
+        /^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(path) ||
+        /^log\/.+/.test(path)
+      ) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+    });
+  </script>
+</body>
+</html>
