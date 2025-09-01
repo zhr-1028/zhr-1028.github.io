@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZHR的博客爱乱写 | zhr&#39;s blog</title>
+  <title>ZHR的博客IDEAL构建maven项目并添加springboot模块。 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/public.css" />
@@ -16,7 +16,7 @@
 
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `ZHR的博客爱乱写`
+    document.title = `ZHR的博客IDEAL构建maven项目并添加springboot模块。`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -344,171 +344,123 @@
     </div>
   </div>
 </div></div>
-      <div id="main-container" class="main-container"><link rel="stylesheet" href="/css/partial/index.css" />
+      <div id="main-container" class="main-container">
 
 
+  <link rel="stylesheet" href="/css/partial/article.css" />
 
-<div class="index">
-  <div class="index-left">
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="IDEAL构建maven项目并添加springboot模块。" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/09/01/Idea%E5%BF%AB%E9%80%9F%E6%9E%84%E5%BB%BAMaven%EF%BC%8Cspringboot%E9%A1%B9%E7%9B%AE/">IDEAL构建maven项目并添加springboot模块。 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/Web/" rel="tag">Web</a>
-              </p>
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">IDEAL构建maven项目并添加springboot模块。</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
             
           </div>
-          <div class="bg"></div>
-        </div>
-      </div>
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="Robocup3D-UT代码使用指南" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/05/05/robocup3d-UT%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">Robocup3D-UT代码使用指南 </a>
-          <div>
-            
-            
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            <a class="tag-link" href="/tags/Web/" rel="tag">Web</a>
           </div>
-          <div class="bg"></div>
+          
+          <p class="article-info--date">日期：2025-09-01 19:57:14</p>
         </div>
+        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
       </div>
+    </div>
+    <article class="article-content markdown-body">
+      <h2 id="一，Maven模块构建前准备"><a href="#一，Maven模块构建前准备" class="headerlink" title="一，Maven模块构建前准备"></a>一，Maven模块构建前准备</h2><p>为何构建？maven提供了统一的项目结构标准，这样就可以统一项目结构。springboot简化 Spring 应用的开发、部署和运行过程，让开发者能够更快速、更高效地构建生产级别的 Java 应用程序<br>1.maven下载：<br>官网链接如下(下载非常慢，可以挂一个梯子解决)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://maven.apache.org/</span><br></pre></td></tr></table></figure>
+<p>进入Download界面根据需求选择二进制的自解码文件即可。（linux就选择tar.gz））<br>2.maven的常用cmd命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">编译：mvn compile</span><br><span class="line"></span><br><span class="line">清理：mvn clean</span><br><span class="line"></span><br><span class="line">测试：mvn test</span><br><span class="line"></span><br><span class="line">打包：mvn package</span><br><span class="line"></span><br><span class="line">安装：mvn install</span><br></pre></td></tr></table></figure>
+<p>3.配置环境变量<br>解压完成后对maven的环境变量进行配置：如下图<br>变量名与图中一致,路径选择自己的解压目录即可。<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/15.png"><br>在path里面新建添加一个%MAVEN_HOME%\bin<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/14.png"><br>测试是否成功：<br>快捷键：Windows键+R，输入cmd，黑色界面里面再输入mvn -version（成功前提是已经配置好了Java）</p>
+<p>4.创建仓库及对配置文件进行修改<br>首先创建仓库文件夹名称为mvn_repo（以下为示例目录）<br>d:&#x2F;apache-maven-3.9.11&#x2F;mvn_repo<br>打开conf文件夹，记事本打开setting.xml配置文件<br>  先配置本地仓库（为刚才创建的文件夹），然后配置阿里云私服加快下载速度<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/16.png"><br>可以将全部内容复制给AI大模型，告诉其需求，能快速定位并修改。</p>
+<h2 id="二，Ideal构建Maven"><a href="#二，Ideal构建Maven" class="headerlink" title="二，Ideal构建Maven"></a>二，Ideal构建Maven</h2><p>1.创建一个空项目<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/13.png"><br>2.文件-&gt;设置-&gt;构建-&gt;构建工具-&gt;选择maven<br>按照下图选择自己的配置文件路径及仓库地址<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/17.png"></p>
+<p>3.右击根目录–&gt;新建–&gt;模块–&gt;Maven Archetype(根据需求选择模板)<br>填好对应信息，jdk版本要与自己的对应<br>1.Maven和Maven Archetype区别？<br>Maven：普通工程<br>Maven Archetype：模板工程<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/18.png"></p>
+<h2 id="三-创建springboot项目"><a href="#三-创建springboot项目" class="headerlink" title="三,创建springboot项目"></a>三,创建springboot项目</h2><p>1.新建新模块选择spring boot项，类型选择maven<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/22.png"><br>点击下一步，这里我要进行Web开发就只勾选了spring Web<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/23.png"><br>2.spring boot快速启动<br>运行自动生成的Application类,点击第九行的运行（项目默认占用8080端口）</p>
+<p><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/24.png"><br>2.进行测试，创建一个简单控制器类<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/25.png"><br>重新运行自动生成的Application类<br>浏览器访问本地端口<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/26.png"><br>@RequestMapping(“&#x2F;hello”)指定了该方法处理的 URL 路径，当访问&#x2F;hello时会调用此方法<br>向控制台输出 “HelloZHR”<br>返回字符串 “Hello ZHR” 作为 HTTP 响应</p>
+
+    </article>
     
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="如何利用hexo框架在github上搭建个人博客" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/01/25/hexo%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%B9%B6%E9%83%A8%E7%BD%B2%E5%88%B0github/">如何利用hexo框架在github上搭建个人博客 </a>
-          <div>
-            
-            
-          </div>
-          <div class="bg"></div>
-        </div>
-      </div>
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="2025/09/01/Idea快速构建Maven，springboot项目/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
     
   </div>
-  <div class="index-center">
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" data-cover="" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="Ubuntu使用前配置及ssh连接VScode" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/05/07/Ubuntu%E4%BD%BF%E7%94%A8%E5%89%8D%E9%85%8D%E7%BD%AE%E5%8F%8Assh%E8%BF%9E%E6%8E%A5VScode/">Ubuntu使用前配置及ssh连接VScode </a>
-          <div>
-            
-            
-          </div>
-          <div class="bg"></div>
-        </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8CMaven%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA%E5%89%8D%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">一，Maven模块构建前准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%EF%BC%8CIdeal%E6%9E%84%E5%BB%BAMaven"><span class="toc-number">2.</span> <span class="toc-text">二，Ideal构建Maven</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E5%88%9B%E5%BB%BAspringboot%E9%A1%B9%E7%9B%AE"><span class="toc-number">3.</span> <span class="toc-text">三,创建springboot项目</span></a></li></ol>
       </div>
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" data-cover="" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/02/11/%E8%AE%AD%E7%BB%83%E9%9B%86%E5%88%B6%E4%BD%9C%EF%BC%8CYOLOv11%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%8F%8APyQt6%E5%9B%BE%E5%83%8F%E5%8C%96%E7%95%8C%E9%9D%A2%E5%BC%80%E5%8F%91/">使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息 </a>
-          <div>
-            
-            
-          </div>
-          <div class="bg"></div>
-        </div>
-      </div>
-    
-  </div>
-  <div class="index-right">
-    <div class="index-right-wrapper">
       
-      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web/" rel="tag">Web</a></li></ul>
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/09/">2025年09月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">2025年05月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/02/">2025年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">2025年01月</a><span class="archive-list-count">1</span></li></ul>
+        <div class="catelogue catelogue-2">
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2025/05/07/Ubuntu使用前配置及ssh连接VScode/">Ubuntu使用前配置及ssh连接VScode</a>
+            </p>
+          
+        </div>
+      
     </div>
   </div>
 </div>
 
 
 <script>
-  var allImgBoxs = document.querySelectorAll('.index-article--box');
-  var windowHeight = window.innerHeight;
-  var boxs = Array.from(allImgBoxs);
-  var timer = null;
-  boxs.forEach((box, idx) => {
-    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
-      box.classList.add('img-loading');
-    } else {
-      const imgDom = box.querySelector('img');
-      imgDom.src = imgDom.dataset.cover;
-    }
-  });
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: '2025/09/01/Idea快速构建Maven，springboot项目/'
+  })
+</script>
 
-  function scrollFn() {
-    if (timer) {
-      return;
-    }
-    timer = setTimeout(() => {
-      loadImage();
-      timer = null;
-    }, 100)
-  }
 
-  setTimeout(() => {
-    loadImage();
-  }, 100);
-  if (!window.loadedImage) {
-    document.addEventListener('scroll', scrollFn);
-  }
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script> 
 
-  function loadImage() {
-    const doc = document.documentElement;
-    const scrollTop = doc.scrollTop;
-    if (boxs.every(box => box.loadedImage)) {
-      document.removeEventListener('scroll', scrollFn);
-      window.loadedImage = 1;
-      return;
-    }
-    boxs.forEach((box, idx) => {
-      if (box.loadedImage) {
-        return;
-      }
-      if (box.getBoundingClientRect().top < windowHeight) {
-        const imgDom = box.querySelector('img');
-        imgDom.src = imgDom.dataset.cover;
-        // 图片成功加载
-        imgDom.onload = () => {
-          box.classList.remove('img-loading');
-          box.loadedImage = true;
-          if (!window.loadImageSet) {
-            window.loadImageSet = [];
-          }
-          window.loadImageSet.push(idx);
-        }
-        // 图片加载失败
-        imgDom.onerror = () => {
-          box.classList.remove('img-loading');
-          box.classList.add('img-error');
-          imgDom.src = '/imgs/404.png';
-        }
-      }
-    });
-  }
-</script> </div>
+</div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
     <div class="main-right--title">
