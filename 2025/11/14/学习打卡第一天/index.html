@@ -6,13 +6,17 @@
   <title>ZHR的全栈打卡第一天 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
-  <!-- 其他样式和脚本引入 -->
   <link rel="stylesheet" href="/css/public.css" />
-  <!-- ...省略其他链接... -->
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
 
-  <!-- 修正 JavaScript 标题赋值（转义特殊字符） -->
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = "ZHR的全栈打卡第一天 | zhr's blog";
+    document.title = `ZHR的全栈打卡第一天`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -189,7 +193,7 @@
   const ipt = document.querySelector('#search-input')
   const btn = document.querySelector('#search-btn')
   const layer = document.querySelector('#search-layer')
-  const posts = JSON.parse(`[{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"打卡第一天","path":"2025/11/14/学习打卡第一天/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"}]`)
+  const posts = JSON.parse(`[{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"},{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"打卡第一天","path":"2025/11/14/学习打卡第一天/"}]`)
   ipt.addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       handleSearch()
@@ -236,7 +240,7 @@
         <p class="main-left--name">zhr.</p>
         <div class="main-left--tags">
           <span class="main-left--tag">全栈</span>
-          <span class="main-left--tag">学习记录</span>
+          <span class="main-left--tag">记录</span>
         </div>
       </div>
     </div>
