@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ZHR的全栈打卡第二天 | zhr&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>
+    document.title = `ZHR的全栈打卡第二天`
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div>
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="https://zhr-1028.github.io/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"},{"title":"打卡第一天","path":"2025/11/13/学习打卡第一天/"},{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"打卡第二天","path":"2025/11/14/学习打卡第二天/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">zhr.</p>
+        <div class="main-left--tags">
+          <span class="main-left--tag">全栈</span>
+          <span class="main-left--tag">记录</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“宠辱不惊，闲看庭前花开花落”</p>
+        <p>“去留无意，漫随天外云卷云舒”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/zhr-1028"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>0</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>2</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>4 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>6 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>今天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>338天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v0.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <link rel="stylesheet" href="/css/partial/article.css" />
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">打卡第二天</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            <a class="tag-link" href="/tags/Java/" rel="tag">Java</a>
+          </div>
+          
+          <p class="article-info--date">日期：2025-11-14 23:13:35</p>
+        </div>
+        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content markdown-body">
+      <h2 id="JAVA（OOP）回顾"><a href="#JAVA（OOP）回顾" class="headerlink" title="JAVA（OOP）回顾"></a>JAVA（OOP）回顾</h2><h2 id="1-（方法-构造函数-的重载"><a href="#1-（方法-构造函数-的重载" class="headerlink" title="1.（方法&#x2F;构造函数)的重载"></a>1.（方法&#x2F;构造函数)的重载</h2><p>OverLoading： 同一个类中定义了多个方法名相同而参数不同的方法，重载在同一个类中，方法名相同，参数不同（参数的个数、顺序、类型不同）。</p>
+<h2 id="2-this关键字"><a href="#2-this关键字" class="headerlink" title="2.this关键字"></a>2.this关键字</h2><p>this是一种特殊的引用，指向当前对象，一般有以下两种用法<br>—如果发生局部变量和成员变量命名冲突时，可以通过this.成员变量名的方式区分成员变量和局部变量。<br>—一个构造方法中需要调用本类的另一个构造方法，可以通过this()的方式调用，但this()必须要书写在第一行。</p>
+<h2 id="3-final关键字"><a href="#3-final关键字" class="headerlink" title="3.final关键字"></a>3.final关键字</h2><p>final 关键字用来修饰类、方法和变量，具有以下特点：<br>—修饰符方法：方法不能重写<br>—修饰类：类不能继承，final 类中的所有成员方法都会被隐式的指定为 final 方法<br>—修饰符变量：该变量为常量，如果是引用类型的变量，则在对其初始化之后便不能让其指向另一个对象。</p>
+<h2 id="4-static关键字"><a href="#4-static关键字" class="headerlink" title="4.static关键字"></a>4.static关键字</h2><p>其核心作用是将成员（变量、方法、代码块等）与类本身关联，而非与类的实例（对象）关联,静态成员的生命周期（与类共存亡），过度使用会导致内存泄漏或逻辑混乱。static 主要有以下几大作用：<br>—. 修饰静态变量，所有对象共享同一个静态变量，内存中只存在一份副本（存储在方法区的静态区）。<br>访问方式：可以通过 类名.变量名 直接访问，也可通过实例对象访问。<br>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Student &#123;</span><br><span class="line">    // 静态变量（类变量），所有学生共享同一个学校名称</span><br><span class="line">    public static String schoolName = &quot;阳光中学&quot;;</span><br><span class="line">    // 实例变量，每个学生有自己的姓名</span><br><span class="line">    private String name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 访问静态变量</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(Student.schoolName); // 直接通过类名访问</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>—-. 修饰静态方法<br>特点：静态方法属于类，而非实例，可直接通过类名调用，无需创建对象。<br>但静态方法中不能直接访问非静态成员（变量 &#x2F; 方法），因为非静态成员依赖于实例。<br>静态方法中不能使用 this 或 super 关键字（因 this 指向当前实例，而静态方法无实例关联）。<br>用途：常用于工具类，或需要独立于实例的功能。<br>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class MathUtil &#123;</span><br><span class="line">    // 静态方法：计算绝对值</span><br><span class="line">    public static int abs(int num) &#123;</span><br><span class="line">        return num &lt; 0 ? -num : num;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 调用静态方法</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(MathUtil.abs(-5)); // 直接通过类名调用</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>—-. 修饰静态代码块<br>特点：静态代码块是类中用 static 修饰的代码块，在类加载时（首次使用类时）执行，且<strong><span style="color:red;">只执行一次</span></strong>。<br>执行顺序：静态代码块 &gt; 构造代码块 &gt; 构造方法（若有多个静态代码块，按定义顺序执行）。<br>用途：用于类的初始化操作（如加载配置文件、初始化静态变量等）。</p>
+<p>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class Database &#123;</span><br><span class="line">    // 静态代码块：初始化数据库连接</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;加载数据库驱动...&quot;);</span><br><span class="line">        // 连接数据库的代码...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Database() &#123;</span><br><span class="line">        System.out.println(&quot;创建数据库实例&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 测试类加载时执行静态代码块</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new Database(); // 首次使用类，触发静态代码块执行</span><br><span class="line">        new Database(); // 再次创建实例，静态代码块不再执行</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 输出：</span><br><span class="line">// 加载数据库驱动...</span><br><span class="line">// 创建数据库实例</span><br><span class="line">// 创建数据库实例</span><br></pre></td></tr></table></figure>
+<p>—-. 修饰静态内部类<br>特点：静态内部类是定义在类内部、被 static 修饰的类，它不依赖于外部类的实例，可独立存在。<br>与非静态内部类的区别：<br>静态内部类不能直接访问外部类的非静态成员，需通过外部类实例访问。<br>创建静态内部类实例时，无需先创建外部类实例。<br>用途：当内部类与外部类的实例无关，仅为外部类提供辅助功能时使用（如 HashMap 中的 Entry 静态内部类）。<br>·示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class Outer &#123;</span><br><span class="line">    private static int staticNum = 10;</span><br><span class="line">    private int num = 20;</span><br><span class="line"></span><br><span class="line">    // 静态内部类</span><br><span class="line">    public static class Inner &#123;</span><br><span class="line">        public void print() &#123;</span><br><span class="line">            System.out.println(staticNum); // 可访问外部类静态成员</span><br><span class="line">            // System.out.println(num); // 错误：不能直接访问外部类非静态成员</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 使用静态内部类</span><br><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Outer.Inner inner = new Outer.Inner(); // 无需创建Outer实例</span><br><span class="line">        inner.print(); // 输出：10</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-继承与多态"><a href="#5-继承与多态" class="headerlink" title="5.继承与多态"></a>5.继承与多态</h2><p>—Java只支持单继承，不支持多继承。一个类只能有一个父类，不可以有多个父类。Java支持多层继承(继承体系)。Java继承了父类非私有的成员变量和成员方法，但是请注意：子类是无法继承父类的构造方法的。<br>子类从父类继承的某个实例方法无法满足子类的功能需要时，需要在子类中对该实例方法进行重新实现，这样的过程称为重写，也叫做覆写、覆盖。<br>—多态：一种事物的多种形态（多态的前提：继承、重写、向上转型），通过多态可以提高代码的可重用性，降低模块之间的耦合度<br>示例代码：<br>抽象父类</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 抽象父类：动物</span><br><span class="line">public abstract class Animal &#123;</span><br><span class="line">    // 抽象方法：发出叫声（由子类具体实现）</span><br><span class="line">    public abstract void makeSound();</span><br><span class="line">    </span><br><span class="line">    // 普通方法：呼吸（所有动物共有的行为）</span><br><span class="line">    public void breathe() &#123;</span><br><span class="line">        System.out.println(&quot;动物在呼吸...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义子类（继承父类并实现多态)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 子类：狗（继承Animal）</span><br><span class="line">public class Dog extends Animal &#123;</span><br><span class="line">    // 重写父类的抽象方法：狗叫</span><br><span class="line">    @Override</span><br><span class="line">    public void makeSound() &#123;</span><br><span class="line">        System.out.println(&quot;小狗：汪汪汪！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 子类：猫（继承Animal）</span><br><span class="line">public class Cat extends Animal &#123;</span><br><span class="line">    // 重写父类的抽象方法：猫叫</span><br><span class="line">    @Override</span><br><span class="line">    public void makeSound() &#123;</span><br><span class="line">        System.out.println(&quot;小猫：喵喵喵！&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 测试类（体现多态的使用）<br> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 多态核心：父类引用指向子类对象</span><br><span class="line">        Animal animal1 = new Dog(); // 父类引用指向Dog对象</span><br><span class="line">        Animal animal2 = new Cat(); // 父类引用指向Cat对象</span><br><span class="line">        </span><br><span class="line">        // 调用同一方法makeSound()，表现出不同行为（多态）</span><br><span class="line">        animal1.makeSound(); // 输出：小狗：汪汪汪！</span><br><span class="line">        animal2.makeSound(); // 输出：小猫：喵喵喵！</span><br><span class="line">        </span><br><span class="line">        // 调用父类的普通方法（子类未重写，直接使用父类实现）</span><br><span class="line">        animal1.breathe(); // 输出：动物在呼吸...</span><br><span class="line">        animal2.breathe(); // 输出：动物在呼吸...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="6-抽象类案例代码："><a href="#6-抽象类案例代码：" class="headerlink" title="6.抽象类案例代码："></a>6.抽象类案例代码：</h2> <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"> // 抽象类：交通工具（无法实例化，只能被继承）</span><br><span class="line">abstract class Vehicle &#123;</span><br><span class="line">    protected String name;  // 交通工具名称</span><br><span class="line">    protected double speed; // 速度（km/h）</span><br><span class="line"></span><br><span class="line">    // 构造方法：初始化名称和速度</span><br><span class="line">    public Vehicle(String name, double speed) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.speed = speed;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 普通方法：启动（所有交通工具通用的实现）</span><br><span class="line">    public void start() &#123;</span><br><span class="line">        System.out.println(name + &quot;启动了...&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 普通方法：停止（所有交通工具通用的实现）</span><br><span class="line">    public void stop() &#123;</span><br><span class="line">        System.out.println(name + &quot;停止了。&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 抽象方法：行驶方式（必须由子类实现，因不同工具行驶方式不同）</span><br><span class="line">    public abstract void run();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 子类1：汽车（继承抽象类Vehicle，必须实现run()方法）</span><br><span class="line">class Car extends Vehicle &#123;</span><br><span class="line">    // 调用父类构造方法</span><br><span class="line">    public Car(String name, double speed) &#123;</span><br><span class="line">        super(name, speed);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 实现抽象方法：汽车的行驶方式</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(name + &quot;在公路上以&quot; + speed + &quot;km/h的速度行驶（四个轮子滚动）&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 子类2：自行车（继承抽象类Vehicle，必须实现run()方法）</span><br><span class="line">class Bicycle extends Vehicle &#123;</span><br><span class="line">    // 调用父类构造方法</span><br><span class="line">    public Bicycle(String name, double speed) &#123;</span><br><span class="line">        super(name, speed);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 实现抽象方法：自行车的行驶方式</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(name + &quot;在自行车道以&quot; + speed + &quot;km/h的速度行驶（脚踏驱动）&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 测试类（public类，文件名需为VehicleTest.java）</span><br><span class="line">public class VehicleTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 抽象类不能实例化，只能通过子类对象使用</span><br><span class="line">        Vehicle car = new Car(&quot;特斯拉Model 3&quot;, 120);</span><br><span class="line">        Vehicle bike = new Bicycle(&quot;捷安特&quot;, 15);</span><br><span class="line"></span><br><span class="line">        // 调用普通方法（继承自父类）</span><br><span class="line">        car.start();</span><br><span class="line">        bike.start();</span><br><span class="line"></span><br><span class="line">        // 调用抽象方法（子类实现，体现多态）</span><br><span class="line">        car.run();</span><br><span class="line">        bike.run();</span><br><span class="line"></span><br><span class="line">        // 调用普通方法</span><br><span class="line">        car.stop();</span><br><span class="line">        bike.stop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 抽象类的核心特点（通过案例体现）<br>不能实例化：Vehicle 是抽象类，无法直接创建对象（如 new Vehicle(…) 会报错），只能通过子类实例化。<br>包含抽象方法：run() 被 abstract 修饰，没有方法体，<strong><span style="color:red;">强制子类必须实现</span></strong>。（否则子类也需声明为抽象类）。<br>可包含普通方法：start()、stop() 是普通方法，提供通用实现，子类可直接使用或重写。<br>作为父类体现多态：父类引用（Vehicle car）指向子类对象（new Car(…)），调用 run() 时执行子类的实现，体现多态特性。<br>何时使用抽象类？<br>当多个类存在共性（属性 &#x2F; 方法），但部分行为（方法）无法统一实现（需子类各自实现）时，适合用抽象类。例如：</p>
+<h2 id="7-接口"><a href="#7-接口" class="headerlink" title="7.接口"></a>7.接口</h2><p>案例代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">// 定义支付接口（规范支付功能）</span><br><span class="line">interface Payment &#123;</span><br><span class="line">    // 接口中的常量（默认public static final）</span><br><span class="line">    String CURRENCY = &quot;人民币&quot;;</span><br><span class="line"></span><br><span class="line">    // 抽象方法：发起支付（默认public abstract）</span><br><span class="line">    void pay(double amount);</span><br><span class="line"></span><br><span class="line">    // 抽象方法：查询支付状态</span><br><span class="line">    String queryStatus(String orderId);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 微信支付类（实现Payment接口，必须实现所有方法）</span><br><span class="line">class WeChatPayment implements Payment &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void pay(double amount) &#123;</span><br><span class="line">        System.out.println(&quot;使用微信支付&quot; + amount + CURRENCY);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String queryStatus(String orderId) &#123;</span><br><span class="line">        return &quot;微信支付订单[&quot; + orderId + &quot;]：已支付&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 支付宝支付类（实现Payment接口）</span><br><span class="line">class AlipayPayment implements Payment &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void pay(double amount) &#123;</span><br><span class="line">        System.out.println(&quot;使用支付宝支付&quot; + amount + CURRENCY);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String queryStatus(String orderId) &#123;</span><br><span class="line">        return &quot;支付宝订单[&quot; + orderId + &quot;]：已支付&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 测试类（public类）</span><br><span class="line">public class PaymentTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 接口引用指向实现类对象（多态）</span><br><span class="line">        Payment wechat = new WeChatPayment();</span><br><span class="line">        Payment alipay = new AlipayPayment();</span><br><span class="line"></span><br><span class="line">        // 调用支付方法（不同实现类表现不同，体现多态）</span><br><span class="line">        wechat.pay(99.0);</span><br><span class="line">        alipay.pay(199.0);</span><br><span class="line"></span><br><span class="line">        // 调用查询状态方法</span><br><span class="line">        System.out.println(wechat.queryStatus(&quot;WX123456&quot;));</span><br><span class="line">        System.out.println(alipay.queryStatus(&quot;ALI789012&quot;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接口的核心特点:<br>—接口中的方法默认是 public abstract（可省略不写），只有声明，没有方法体。<br>—接口中的变量默认是 public static final（常量），必须初始化，且无法修改。<br>—类通过 implements 关键字实现接口，必须实现接口中所有抽象方法（否则该类需声明为抽象类）。<br>—一个类可以实现多个接口（弥补 Java 单继承的限制），接口之间也可以通过 extends 继承（支持多继承）<br>—接口是 Java 中实现多态和代码解耦的重要手段，广泛用于框架设计</p>
+<p>接口VS抽象类<br>设计目的：<br>定义功能规范（“能做什么”）VS 定义类的模板（“是什么”+“能做什么”）<br>继承 &#x2F; 实现	:<br>类可实现多个接口，接口可多继承接口 VS 类只能单继承抽象类</p>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="2025/11/14/学习打卡第二天/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA%EF%BC%88OOP%EF%BC%89%E5%9B%9E%E9%A1%BE"><span class="toc-number">1.</span> <span class="toc-text">JAVA（OOP）回顾</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%EF%BC%88%E6%96%B9%E6%B3%95-%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-%E7%9A%84%E9%87%8D%E8%BD%BD"><span class="toc-number">2.</span> <span class="toc-text">1.（方法&#x2F;构造函数)的重载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-this%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.</span> <span class="toc-text">2.this关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-final%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">4.</span> <span class="toc-text">3.final关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-static%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">5.</span> <span class="toc-text">4.static关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%BB%A7%E6%89%BF%E4%B8%8E%E5%A4%9A%E6%80%81"><span class="toc-number">6.</span> <span class="toc-text">5.继承与多态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%8A%BD%E8%B1%A1%E7%B1%BB%E6%A1%88%E4%BE%8B%E4%BB%A3%E7%A0%81%EF%BC%9A"><span class="toc-number">7.</span> <span class="toc-text">6.抽象类案例代码：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%8E%A5%E5%8F%A3"><span class="toc-number">8.</span> <span class="toc-text">7.接口</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2025/11/13/学习打卡第一天/">打卡第一天</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: '2025/11/14/学习打卡第二天/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="main-right--content">
+      Hello~欢迎你们来到我的博客小站，希望能在这里收获到有用的东西！ 
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+      <p>Theme：<a target="_blank" rel="noopener" href="https://github.com/Aizener/hexo-theme-cola">Cola.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index"></a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"安河桥","artist":"宋冬野","url":"music/安河桥-宋冬野.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"WindHill","artist":"纯音乐","url":"music/WindyandHill.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/md7748.jpg"},{"name":"some-where","artist":"纯音乐","url":"music/some-where.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/m353fhsd.jpg"},{"name":"城南花已开","artist":"纯音乐","url":"music/城南花已开.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/mhfdf.jpg"},{"name":"恐怖","artist":"纯音乐","url":"music/迷失森林.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/mhostq.jpg"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+
+  <script>
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      const path = location.pathname.replace(rootPath, '');
+      if (
+        /^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(path) ||
+        /^log\/.+/.test(path)
+      ) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+    });
+  </script>
+</body>
+</html>

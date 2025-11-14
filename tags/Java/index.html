@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZHR的全栈如何利用hexo框架在github上搭建个人博客 | zhr&#39;s blog</title>
+  <title>ZHR的全栈学习记录 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/public.css" />
@@ -16,7 +16,7 @@
 
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `ZHR的全栈如何利用hexo框架在github上搭建个人博客`
+    document.title = `ZHR的全栈学习记录`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -344,127 +344,111 @@
     </div>
   </div>
 </div></div>
-      <div id="main-container" class="main-container">
+      <div id="main-container" class="main-container"><link rel="stylesheet" href="/css/partial/index.css" />
 
 
-  <link rel="stylesheet" href="/css/partial/article.css" />
 
-<div class="article-container">
-  <div class="article">
-    <h1 class="article-title">如何利用hexo框架在github上搭建个人博客</h1>
-    <div class="article-info">
-      <div class="article-info--item">
-        <div class="article-info--info">
-          
-          <div class="article-info--categories">
-            <span>分类：</span>
-            
-          </div>
-          
-          
-          <div class="article-info--tags">
-            <span>标签：</span>
-            
-          </div>
-          
-          <p class="article-info--date">日期：2025-01-25 18:16:22</p>
-        </div>
-        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
-      </div>
-    </div>
-    <article class="article-content markdown-body">
-      <hr>
-<p>date: 2025-01-25 18:16:22<br>tags:<br>-博客搭建<br>-Hexo</p>
-<h2 id="一，相关软件的安装与准备工作"><a href="#一，相关软件的安装与准备工作" class="headerlink" title="一，相关软件的安装与准备工作"></a>一，相关软件的安装与准备工作</h2><p>1.用qq邮箱等注册Github账号，并创建仓库<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/1.png"><br>仓库命名需要使用github一样的名字并加上.github.io<br>(如果你叫aaa则命名为aaa.github.io)并公开仓库</p>
-<p>2.安装git ,hexo部署时需要用到，网址如下<br><a target="_blank" rel="noopener" href="https://git-scm.com/">https://git-scm.com/</a></p>
-<p>3，安装node  网址<a target="_blank" rel="noopener" href="https://nodejs.org/">https://nodejs.org/</a><br>然后将整个文件夹配置到系统环境变量</p>
-<h2 id="二-Hexo的相关操作"><a href="#二-Hexo的相关操作" class="headerlink" title="二,Hexo的相关操作"></a>二,Hexo的相关操作</h2><p>创建一个文件夹如blog,进入文件夹，然后右键点击git bash here<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/2.png"><br>执行以下代码安装hexo<br><code> npm install -g hexo-cli</code><br>查看是否安装成功<br><code>hexo -v</code></p>
-<p>初始化命令<code>hexo init</code><br>然后blog文件夹里出现<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/3.png"></p>
-<p>打开_config.yml配置文件<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/4.png"><br>url栏目改为仓库地址（github的仓库里面有）加上&#x2F;仓库地址后部分并添加root：&#x2F;(如图)</p>
-<p>翻到配置文件最下面<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/5.png"></p>
-<p>theme可以应用一些主题（这里不说了）<br>添加上图的部分<br>repo先不填这里需要在github获取令牌(因为现在好像不支持github密码连接)</p>
-<p>来到github点击右上角头像再点击设置，最下面点击开发者设置，在此创建令牌<br><img src="https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/6.png"><br>把令牌权限都打开，以防部署失败<br>令牌生成后一定要保存好，他只会出现一次！！！！<br>在配置文件里写<br>repo: https:&#x2F;&#x2F;令牌地址&#x2F;github用户名&#x2F;仓库地址.git<br>保存<br>这里我们再到github进入仓库的设置把main改为master</p>
-<h2 id="三，最后的部署"><a href="#三，最后的部署" class="headerlink" title="三，最后的部署"></a>三，最后的部署</h2><p>进入blog文件夹，右键打开git bash<br>执行安装部署文件<br><code>npm install hexo-deployer-git -</code><br>依次执行<br><code>hexo s</code>本地服务器预览<br><code>hexo g</code>生成静态网页文件<br><code>hexo d</code>部署博客网页（失败多试几次，应为github网页访问不稳定）</p>
-<h2 id="四，写博客"><a href="#四，写博客" class="headerlink" title="四，写博客"></a>四，写博客</h2><p>执行<br><code>hexo new &quot;文章名&quot;</code><br>然后blog\source_posts文件夹里出现.md结尾文件可以用vscode等编写</p>
-<p>每次写好后git面板执行,更新文章<br><code>hexo clean &amp;&amp; hexo generate &amp;&amp; hexo deploy</code><br>这样别人一般可以通过<br>https:&#x2F;&#x2F;用户名.github.io访问你的博客</p>
-
-    </article>
+<div class="index">
+  <div class="index-left">
     
-    <div class="read-nums">
-      <!-- id 将作为查询条件 -->
-      <span id="2025/01/25/hexo框架搭建个人博客并部署到github/" class="leancloud_visitors" data-flag-title="Your Article Title">
-        <em class="post-meta-item-text">浏览量</em>
-        <i class="leancloud-visitors-count"></i>
-      </span>
-    </div>
-    <div class="comments-intro">
-      <h2>评论区</h2>
-      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
-    </div>
-    <div id="vcomments" class="vcomments"></div>
+      <div class="index-article">
+        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
+        <div class="index-article--box">
+          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第二天" />
+        </div>
+        <div class="index-article--content">
+          <a href="/2025/11/14/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%BA%8C%E5%A4%A9/">打卡第二天 </a>
+          <div>
+            
+            
+              <p>
+                <a class="-link" href="/tags/Java/" rel="tag">Java</a>
+              </p>
+            
+          </div>
+          <div class="bg"></div>
+        </div>
+      </div>
     
   </div>
-  <div class="article-catelogue">
-    <div class="article-catelogue--wrapper">
-      <div class="catelogue catelogue-1">
-        <h3>目录</h3>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8C%E7%9B%B8%E5%85%B3%E8%BD%AF%E4%BB%B6%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">一，相关软件的安装与准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-Hexo%E7%9A%84%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">二,Hexo的相关操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%EF%BC%8C%E6%9C%80%E5%90%8E%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="toc-number">3.</span> <span class="toc-text">三，最后的部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%EF%BC%8C%E5%86%99%E5%8D%9A%E5%AE%A2"><span class="toc-number">4.</span> <span class="toc-text">四，写博客</span></a></li></ol>
-      </div>
+  <div class="index-center">
+    
+  </div>
+  <div class="index-right">
+    <div class="index-right-wrapper">
       
-        <div class="catelogue catelogue-2">
-          
-            <p>
-              <span>上一篇：</span>
-              <a href="/2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/">使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息</a>
-            </p>
-           
-          
-        </div>
-      
+      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">2025年11月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">2025年05月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/02/">2025年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">2025年01月</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 </div>
 
 
 <script>
-  // var定义，避免pjax重新进来造成的重复声明错误
-  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
-  new Valine({
-    el: '#vcomments',
-    appId: config.appId,
-    appKey: config.appKey,
-    placeholder: config.placeholder,
-    meta: config.meta,
-    recordIP: config.recordIP,
-    visitor: config.visitor,
-    enableQQ: config.enableQQ,
-    path: '2025/01/25/hexo框架搭建个人博客并部署到github/'
-  })
-</script>
+  var allImgBoxs = document.querySelectorAll('.index-article--box');
+  var windowHeight = window.innerHeight;
+  var boxs = Array.from(allImgBoxs);
+  var timer = null;
+  boxs.forEach((box, idx) => {
+    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
+      box.classList.add('img-loading');
+    } else {
+      const imgDom = box.querySelector('img');
+      imgDom.src = imgDom.dataset.cover;
+    }
+  });
 
+  function scrollFn() {
+    if (timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      loadImage();
+      timer = null;
+    }, 100)
+  }
 
-<script>
-  $(document).on('pjax:complete', function() {
-    const tocs = document.querySelector('.toc')
-    const links = tocs ? tocs.querySelectorAll('a') : []
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        const href = decodeURIComponent(e.href)
-        href.search(/#(.*)/)
-        const id = RegExp.$1
-        const target = document.querySelector('#' + id)
-        const top = target.offsetTop
-        document.documentElement.scrollTo({
-          top: top - 100,
-          behavior: 'smooth'
-        })
-        e.preventDefault()
-      })
-    })
-  })
-</script> 
+  setTimeout(() => {
+    loadImage();
+  }, 100);
+  if (!window.loadedImage) {
+    document.addEventListener('scroll', scrollFn);
+  }
 
-</div>
+  function loadImage() {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop;
+    if (boxs.every(box => box.loadedImage)) {
+      document.removeEventListener('scroll', scrollFn);
+      window.loadedImage = 1;
+      return;
+    }
+    boxs.forEach((box, idx) => {
+      if (box.loadedImage) {
+        return;
+      }
+      if (box.getBoundingClientRect().top < windowHeight) {
+        const imgDom = box.querySelector('img');
+        imgDom.src = imgDom.dataset.cover;
+        // 图片成功加载
+        imgDom.onload = () => {
+          box.classList.remove('img-loading');
+          box.loadedImage = true;
+          if (!window.loadImageSet) {
+            window.loadImageSet = [];
+          }
+          window.loadImageSet.push(idx);
+        }
+        // 图片加载失败
+        imgDom.onerror = () => {
+          box.classList.remove('img-loading');
+          box.classList.add('img-error');
+          imgDom.src = '/imgs/404.png';
+        }
+      }
+    });
+  }
+</script> </div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
     <div class="main-right--title">
