@@ -193,7 +193,7 @@
   const ipt = document.querySelector('#search-input')
   const btn = document.querySelector('#search-btn')
   const layer = document.querySelector('#search-layer')
-  const posts = JSON.parse(`[{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"打卡第一天","path":"2025/11/13/学习打卡第一天/"},{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"},{"title":"打卡第二天","path":"2025/11/14/学习打卡第二天/"}]`)
+  const posts = JSON.parse(`[{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"},{"title":"打卡第一天","path":"2025/11/13/学习打卡第一天/"},{"title":"打卡第二天","path":"2025/11/14/学习打卡第二天/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"}]`)
   ipt.addEventListener('keyup', e => {
     if (e.key === 'Enter') {
       handleSearch()
@@ -442,7 +442,7 @@
 
 <script>
   // var定义，避免pjax重新进来造成的重复声明错误
-  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true}')
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true,"lazyload":true}')
   new Valine({
     el: '#vcomments',
     appId: config.appId,
