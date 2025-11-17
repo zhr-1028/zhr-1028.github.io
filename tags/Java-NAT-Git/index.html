@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZHR的全栈打卡第一天 | zhr&#39;s blog</title>
+  <title>ZHR的全栈学习记录 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/public.css" />
@@ -16,7 +16,7 @@
 
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `ZHR的全栈打卡第一天`
+    document.title = `ZHR的全栈学习记录`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -344,132 +344,111 @@
     </div>
   </div>
 </div></div>
-      <div id="main-container" class="main-container">
+      <div id="main-container" class="main-container"><link rel="stylesheet" href="/css/partial/index.css" />
 
 
-  <link rel="stylesheet" href="/css/partial/article.css" />
 
-<div class="article-container">
-  <div class="article">
-    <h1 class="article-title">打卡第一天</h1>
-    <div class="article-info">
-      <div class="article-info--item">
-        <div class="article-info--info">
-          
-          <div class="article-info--categories">
-            <span>分类：</span>
+<div class="index">
+  <div class="index-left">
+    
+      <div class="index-article">
+        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
+        <div class="index-article--box">
+          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡四天" />
+        </div>
+        <div class="index-article--content">
+          <a href="/2025/11/17/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E5%9B%9B%E5%A4%A9/">打卡四天 </a>
+          <div>
+            
+            
+              <p>
+                <a class="-link" href="/tags/Java-NAT-Git/" rel="tag">Java/NAT/Git</a>
+              </p>
             
           </div>
-          
-          
-          <div class="article-info--tags">
-            <span>标签：</span>
-            <a class="tag-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a>
-          </div>
-          
-          <p class="article-info--date">日期：2025-11-13 23:05:35</p>
+          <div class="bg"></div>
         </div>
-        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
       </div>
-    </div>
-    <article class="article-content markdown-body">
-      <h2 id="一，Springboot篇"><a href="#一，Springboot篇" class="headerlink" title="一，Springboot篇"></a>一，Springboot篇</h2><p>1.Spring 框架中，IOC（控制反转） 和 DI（依赖注入） 是核心思想，共同实现了分层解耦</p>
-<p>@Component :  将该类交给IOC容器<br>@Autowired    : 在容器中查找对象DI依赖注入</p>
-<p>@Component 有以下三大衍生注解<br>@Controller          标注在控制层类上<br>@Service                标注在业务层类上<br>@Repoditory         标注在数据访问层类上（Dao,与mybatis整合，用的少）</p>
-<ol start="2">
-<li>两个实现类继承于一个接口的解决方案有以下三种<br>—加上@Component注解的同时@Primary,表示优先注入<br>---@Autowired依赖注入的同时用@Qualifier(“userServiceImpl”)指定要注入的类<br>---@直接用@Resource(name&#x3D;”userServiceImpl”)指定要注入的类</li>
-</ol>
-<h2 id="二-Mybatis篇"><a href="#二-Mybatis篇" class="headerlink" title="二,Mybatis篇"></a>二,Mybatis篇</h2><p>@Mapper 表示这是mybatis的持久层接口(而且自动将该实现类对象存入IOC容器)<br>@Select     （查询注解）<br>@Delete      (删除注解 )<br>@Insert      （新增注解)<br>@Update     (更新修改操作注解)<br>Mapper接口中需要传入多个参数时需要用到@Param为每个参数重新命名（基于springboot项目官方骨架创建的项目会保留方法形参名，@Param形参名可以省略）</p>
-<p>2.Mybatis的XML映射配置<br>同包同名或者指定路径</p>
-<p>3.mybatis的映射封装<br>由于同名时mybatis才会自动封装数据库，名字不一样时有以下三种解决方法<br>1.@Results 和@Result 注解进行手动封装<br>2.执行SQL语句时直接起别名，别名和实体类属性名一样<br>3.推荐方式3：开启驼峰命名（camel）</p>
-<h2 id="三，Tlias案例学习"><a href="#三，Tlias案例学习" class="headerlink" title="三，Tlias案例学习"></a>三，Tlias案例学习</h2><p>1.根据部门ID删除员工需要接受前端传递过来的id参数<br>可通过Spring提供的@RequestParam注解，将请求参数绑定给方法形参</p>
-<p>2.新增部门时，要接受前端发起的json格式的请求，需要用到@RequestBody注解进行标识</p>
-<p>3.查询回显时  注解@PathVariable(“id”)接受路径参数</p>
-<p>4.表关系及多表查询————————————<br>多表关系的解决方案——一对多关系如何实现：<br>在数据库表多的一方，添加字段，来关联一的一方的主键<br>一对一的多表关系同理</p>
-<p>处理多对多关系时，要建立第三张中间表,中间表至少包含两个外键，分别关联两方主键</p>
-
-    </article>
-    
-    <div class="read-nums">
-      <!-- id 将作为查询条件 -->
-      <span id="2025/11/13/学习打卡第一天/" class="leancloud_visitors" data-flag-title="Your Article Title">
-        <em class="post-meta-item-text">浏览量</em>
-        <i class="leancloud-visitors-count"></i>
-      </span>
-    </div>
-    <div class="comments-intro">
-      <h2>评论区</h2>
-      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
-    </div>
-    <div id="vcomments" class="vcomments"></div>
     
   </div>
-  <div class="article-catelogue">
-    <div class="article-catelogue--wrapper">
-      <div class="catelogue catelogue-1">
-        <h3>目录</h3>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8CSpringboot%E7%AF%87"><span class="toc-number">1.</span> <span class="toc-text">一，Springboot篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-Mybatis%E7%AF%87"><span class="toc-number">2.</span> <span class="toc-text">二,Mybatis篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%EF%BC%8CTlias%E6%A1%88%E4%BE%8B%E5%AD%A6%E4%B9%A0"><span class="toc-number">3.</span> <span class="toc-text">三，Tlias案例学习</span></a></li></ol>
-      </div>
+  <div class="index-center">
+    
+  </div>
+  <div class="index-right">
+    <div class="index-right-wrapper">
       
-        <div class="catelogue catelogue-2">
-          
-            <p>
-              <span>上一篇：</span>
-              <a href="/2025/11/14/学习打卡第二天/">打卡第二天</a>
-            </p>
-           
-          
-            <p>
-              <span>下一篇</span>
-              <a href="/2025/05/07/Ubuntu使用前配置及ssh连接VScode/">Ubuntu使用前配置及ssh连接VScode</a>
-            </p>
-          
-        </div>
-      
+      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb-ssh%E5%AF%86%E9%92%A5/" rel="tag">JavaWeb&#x2F;ssh密钥</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java-NAT-Git/" rel="tag">Java&#x2F;NAT&#x2F;Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">2025年11月</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">2025年05月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/02/">2025年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">2025年01月</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 </div>
 
 
 <script>
-  // var定义，避免pjax重新进来造成的重复声明错误
-  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true,"lazyload":true}')
-  new Valine({
-    el: '#vcomments',
-    appId: config.appId,
-    appKey: config.appKey,
-    placeholder: config.placeholder,
-    meta: config.meta,
-    recordIP: config.recordIP,
-    visitor: config.visitor,
-    enableQQ: config.enableQQ,
-    path: '2025/11/13/学习打卡第一天/'
-  })
-</script>
+  var allImgBoxs = document.querySelectorAll('.index-article--box');
+  var windowHeight = window.innerHeight;
+  var boxs = Array.from(allImgBoxs);
+  var timer = null;
+  boxs.forEach((box, idx) => {
+    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
+      box.classList.add('img-loading');
+    } else {
+      const imgDom = box.querySelector('img');
+      imgDom.src = imgDom.dataset.cover;
+    }
+  });
 
+  function scrollFn() {
+    if (timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      loadImage();
+      timer = null;
+    }, 100)
+  }
 
-<script>
-  $(document).on('pjax:complete', function() {
-    const tocs = document.querySelector('.toc')
-    const links = tocs ? tocs.querySelectorAll('a') : []
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        const href = decodeURIComponent(e.href)
-        href.search(/#(.*)/)
-        const id = RegExp.$1
-        const target = document.querySelector('#' + id)
-        const top = target.offsetTop
-        document.documentElement.scrollTo({
-          top: top - 100,
-          behavior: 'smooth'
-        })
-        e.preventDefault()
-      })
-    })
-  })
-</script> 
+  setTimeout(() => {
+    loadImage();
+  }, 100);
+  if (!window.loadedImage) {
+    document.addEventListener('scroll', scrollFn);
+  }
 
-</div>
+  function loadImage() {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop;
+    if (boxs.every(box => box.loadedImage)) {
+      document.removeEventListener('scroll', scrollFn);
+      window.loadedImage = 1;
+      return;
+    }
+    boxs.forEach((box, idx) => {
+      if (box.loadedImage) {
+        return;
+      }
+      if (box.getBoundingClientRect().top < windowHeight) {
+        const imgDom = box.querySelector('img');
+        imgDom.src = imgDom.dataset.cover;
+        // 图片成功加载
+        imgDom.onload = () => {
+          box.classList.remove('img-loading');
+          box.loadedImage = true;
+          if (!window.loadImageSet) {
+            window.loadImageSet = [];
+          }
+          window.loadImageSet.push(idx);
+        }
+        // 图片加载失败
+        imgDom.onerror = () => {
+          box.classList.remove('img-loading');
+          box.classList.add('img-error');
+          imgDom.src = '/imgs/404.png';
+        }
+      }
+    });
+  }
+</script> </div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
     <div class="main-right--title">

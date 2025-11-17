@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ZHR的全栈打卡四天 | zhr&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/public.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/iconfont.css" />
+  <link rel="stylesheet" href="/css/APlayer.min.css" />
+  <script src="/js/APlayer.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery.pjax.min.js"></script>
+
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script>
+    document.title = `ZHR的全栈打卡四天`
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<style>
+  .load {
+    width: 100%;
+    height: 100vh;
+    background-color: rgb(37, 35, 40);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 9999;
+  }
+  .load-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid orange;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+    filter: drop-shadow(0 0 3px orange);
+  }
+  .load-circle-inner {
+    width: 40px;
+    height: 40px;
+    border: 8px solid orange;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate-reverse .5s linear infinite;
+  }
+  .load-text {
+    margin-top: 20px;
+    font-size: 24px;
+    color: orange;
+    display: flex;
+  }
+  .load-text span {
+    margin: 0 5px;
+    text-shadow: 5px 5px 5px orange;
+    animation: move 1s linear infinite;
+  }
+  .load-text span:nth-child(1) {
+    animation-delay: -0.6s;
+  }
+  .load-text span:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  .load-text span:nth-child(3) {
+    animation-delay: -0.4s;
+  }
+  .load-text span:nth-child(4) {
+    animation-delay: -0.3s;
+  }
+  .load-text span:nth-child(5) {
+    animation-delay: -0.2s;
+  }
+  .load-text span:nth-child(6) {
+    animation-delay: -0.1s;
+  }
+  @keyframes rotate {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes rotate-reverse {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(-360deg); }
+  }
+  @keyframes move {
+    0% { transform: translateY(0%) rotate(0) scale(1); }
+    20% { transform: translateY(20%) rotate(10deg) scale(1.2); }
+    80% { transform: translateY(-10%) rotate(-20deg) scale(.8);}
+    100% { transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .progress {
+    position: fixed;
+    left: 0; top: 0;
+    width: 0;
+    height: 3px;
+    background-color: green;
+    transition: all cubic-bezier(0.215, 0.610, 0.355, 1) .1s;
+    z-index: 9999;
+  }
+
+  .to-up {
+    animation: toUp .5s 1;
+  }
+  .gray {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+    pointer-events: none;
+    background-color: #000;
+    mix-blend-mode: color;
+  }
+  @keyframes toUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0) ; opacity: 1; }
+  }
+</style>
+<body>
+  <div id="load" class="load">
+    <div class="load-circle">
+      <div class="load-circle-inner"></div>
+    </div>
+    <p class="load-text">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+    </p>
+  </div>
+  <div id="container" class="container w-100 vh-100" style="display: none;">
+    <header class="header">
+  <div class="header-wrapper">
+    <div class="header-left">
+      <div class="header-search">
+        <input id="search-input" type="text" class="header-search--input" placeholder="请输入要检索的文章标题" />
+        <span id="search-btn" class="header-search--icon"><i class="iconfont icon-sousuo"></i></span>
+      </div>
+      <div id="search-layer" class="header-search--layer hidden">
+        <p class="title">
+          <span>以下是搜索内容：</span>
+          <span id="close-layer-btn">关闭</span>
+        </p>
+        <ul>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right">
+      <ul class="header-menu">
+        <li>
+          <a href="https://zhr-1028.github.io/">
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+            <span class="header-menu--span">首页</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/log">
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+            <span class="header-menu--span">日志</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/link">
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+            <span class="header-menu--span">友情链接</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://zhr-1028.github.io/about">
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+            <span class="header-menu--span">关于我</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<script>
+  const ipt = document.querySelector('#search-input')
+  const btn = document.querySelector('#search-btn')
+  const layer = document.querySelector('#search-layer')
+  const posts = JSON.parse(`[{"title":"Ubuntu使用前配置及ssh连接VScode","path":"2025/05/07/Ubuntu使用前配置及ssh连接VScode/"},{"title":"如何利用hexo框架在github上搭建个人博客","path":"2025/01/25/hexo框架搭建个人博客并部署到github/"},{"title":"Robocup3D-UT代码使用指南","path":"2025/05/05/robocup3d-UT使用指南/"},{"title":"打卡第一天","path":"2025/11/13/学习打卡第一天/"},{"title":"打卡第二天","path":"2025/11/14/学习打卡第二天/"},{"title":"打卡四天","path":"2025/11/17/学习打卡第四天/"},{"title":"使用labelimg制作训练集，YOLOv11模型训练得到权重文件及PyQt6图像化界面开发。实现物品自动识别及统计信息","path":"2025/02/11/训练集制作，YOLOv11模型训练及PyQt6图像化界面开发/"},{"title":"打卡第三天","path":"2025/11/16/学习打卡第三天/"}]`)
+  ipt.addEventListener('keyup', e => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  })
+  btn.addEventListener('click', () => {
+    handleSearch()
+  })
+
+  document.querySelector('#close-layer-btn').addEventListener('click', () => {
+    layer.classList.toggle('hidden')
+  })
+
+  function handleSearch() {
+    if (ipt.value.trim() === '') {
+      return
+    }
+    let html = ''
+    const targetPosts = posts.filter(post => post.title.includes(ipt.value))
+    targetPosts.forEach(post => {
+      html += `
+        <li>
+          <div>
+            <a href="/${post.path}">${post.title.replace(new RegExp(ipt.value), `<span>${ipt.value}</span>`)}</a>
+          </div>
+          <img src="${post.cover || '/imgs/default-cover.webp' }" />
+        </li>
+      `
+    })
+    if (html.trim () === '') {
+      html += '<p class="empty">没有搜索到内容</p>'
+    }
+    layer.querySelector('ul').innerHTML = html
+    layer.classList.remove('hidden')
+  }
+</script> 
+    <section id="main" class="main">
+      <div class="main-left-wrapper">
+<div class="main-left">
+  <div class="main-left--block">
+    <div class="main-left--info">
+      <img src="/imgs/avatar.jpg"" class="main-left--avatar" />
+      <div class="main-left--intro">
+        <p class="main-left--name">zhr.</p>
+        <div class="main-left--tags">
+          <span class="main-left--tag">全栈</span>
+          <span class="main-left--tag">记录</span>
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <div class="main-left--motto">
+        <p>“宠辱不惊，闲看庭前花开花落”</p>
+        <p>“去留无意，漫随天外云卷云舒”</p>
+      </div>
+      <div class="main-left--github">
+        <span class="line"></span>
+        <a target="_blank" rel="noopener" href="https://github.com/zhr-1028"><i class="logo iconfont icon-github-fill"></i></a>
+        <span class="line"></span>
+      </div>
+      <div class="main-left--statics">
+        <a href="/categories">
+          <div>
+            <span>0</span>
+            <span>分类</span>
+          </div>
+        </a>
+        <a href="/tags">
+          <div>
+            <span>4</span>
+            <span>标签</span>
+          </div>
+        </a>
+        <a href="/archives">
+          <div>
+            <span>4 </span>
+            <span>归档</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-left--block">
+    <ul class="main-left--menu">
+      
+        <li>
+          <a href="/">
+            <span class="header-menu--span">小站首页</span>
+            <i class="header-menu--icon iconfont icon-shouye"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/log">
+            <span class="header-menu--span">个人日志</span>
+            <i class="header-menu--icon iconfont icon-rizhi"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/link">
+            <span class="header-menu--span">友情链接</span>
+            <i class="header-menu--icon iconfont icon-youqinglianjie"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/about">
+            <span class="header-menu--span">关于自己</span>
+            <i class="header-menu--icon iconfont icon-guanyuwomen"></i>
+          </a>
+        </li>
+      
+        <li>
+          <a href="/tools">
+            <span class="header-menu--span">我的工具</span>
+            <i class="header-menu--icon iconfont icon-gongju"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+  <div class="main-left--block">
+    <div class="main-left--site">
+      <h5 class="main-left--title">
+        <span>站点信息</span>
+        <i class="iconfont icon-zhandian"></i>
+      </h5>
+      <p class="main-left--subtitle">
+        <span>文章数目：</span>
+        <span>8 篇</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>最近动态：</span>
+        <span>今天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>上线时间：</span>
+        <span>341天</span>
+      </p>
+      <p class="main-left--subtitle">
+        <span>当前版本：</span>
+        <span>v0.0.0</span>
+      </p>
+    </div>
+  </div>
+</div></div>
+      <div id="main-container" class="main-container">
+
+
+  <link rel="stylesheet" href="/css/partial/article.css" />
+
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">打卡四天</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
+            
+          </div>
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            <a class="tag-link" href="/tags/Java-NAT-Git/" rel="tag">Java/NAT/Git</a>
+          </div>
+          
+          <p class="article-info--date">日期：2025-11-17 23:14:11</p>
+        </div>
+        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
+      </div>
+    </div>
+    <article class="article-content markdown-body">
+      <h2 id="一，Java内部类"><a href="#一，Java内部类" class="headerlink" title="一，Java内部类"></a>一，Java内部类</h2><p>定义：内部类（Inner Class）是定义在另一个类内部的类。它依赖于外部类而存在，能访问外部类的成员（包括私有成员），同时也可以封装一些与外部类密切相关的逻辑，增强代码的内聚性。主要分成员内部类，静态内部类，局部内部类， 匿名内部类（重点）4种。</p>
+<ol>
+<li>成员内部类：<br>特点：<br>–属于外部类的实例成员，需通过外部类实例才能创建内部类对象。<br>–可直接访问外部类的所有成员（包括私有成员）。<br>–内部类中不能定义静态成员（静态常量除外<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">示例代码：</span><br><span class="line">public class OuterClass &#123;</span><br><span class="line">    private int outerField = 10;</span><br><span class="line"></span><br><span class="line">    // 成员内部类</span><br><span class="line">    public class InnerClass &#123;</span><br><span class="line">        public void accessOuter() &#123;</span><br><span class="line">            // 直接访问外部类的私有成员</span><br><span class="line">            System.out.println(&quot;外部类字段：&quot; + outerField);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 外部类中创建内部类对象</span><br><span class="line">    public void createInner() &#123;</span><br><span class="line">        InnerClass inner = new InnerClass();</span><br><span class="line">        inner.accessOuter();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 外部类外部创建内部类对象：需通过外部类实例</span><br><span class="line">        OuterClass outer = new OuterClass();</span><br><span class="line">        OuterClass.InnerClass inner = outer.new InnerClass();</span><br><span class="line">        inner.accessOuter(); // 输出：外部类字段：10</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>静态内部类:<br>特点：<br>–属于外部类的静态成员，不依赖外部类实例，可直接通过外部类名访问。<br>–只能访问外部类的静态成员（非静态成员需通过外部类实例访问）。<br>–内部类中可以定义静态成员。</li>
+</ol>
+<p>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public class OuterClass &#123;</span><br><span class="line">    private static int staticOuterField = 20;</span><br><span class="line">    private int nonStaticField = 30;</span><br><span class="line"></span><br><span class="line">    // 静态内部类</span><br><span class="line">    public static class StaticInnerClass &#123;</span><br><span class="line">        public void accessOuter() &#123;</span><br><span class="line">            // 只能直接访问外部类的静态成员</span><br><span class="line">            System.out.println(&quot;外部类静态字段：&quot; + staticOuterField);</span><br><span class="line"></span><br><span class="line">            // 访问非静态成员需通过外部类实例</span><br><span class="line">            OuterClass outer = new OuterClass();</span><br><span class="line">            System.out.println(&quot;外部类非静态字段：&quot; + outer.nonStaticField);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        // 直接通过外部类名创建静态内部类对象</span><br><span class="line">        OuterClass.StaticInnerClass inner = new OuterClass.StaticInnerClass();</span><br><span class="line">        inner.accessOuter(); </span><br><span class="line">        // 输出：</span><br><span class="line">        // 外部类静态字段：20</span><br><span class="line">        // 外部类非静态字段：30</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>局部内部类<br>特点：<br>–作用域仅限于所在的方法或代码块，外部无法直接访问。<br>–可访问外部类的所有成员，以及所在方法中被final或有效 final（Java 8+）修饰的局部变量。<br>–不能使用访问修饰符（public&#x2F;private等）或static修饰。</li>
+</ol>
+<p>示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public class OuterClass &#123;</span><br><span class="line">    private int outerField = 40;</span><br><span class="line"></span><br><span class="line">    public void outerMethod() &#123;</span><br><span class="line">        final int localVar = 50; // 局部变量（有效final）</span><br><span class="line"></span><br><span class="line">        // 局部内部类（定义在方法内）</span><br><span class="line">        class LocalInnerClass &#123;</span><br><span class="line">            public void print() &#123;</span><br><span class="line">                System.out.println(&quot;外部类字段：&quot; + outerField);</span><br><span class="line">                System.out.println(&quot;方法局部变量：&quot; + localVar);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 只能在方法内创建局部内部类对象并使用</span><br><span class="line">        LocalInnerClass inner = new LocalInnerClass();</span><br><span class="line">        inner.print();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        OuterClass outer = new OuterClass();</span><br><span class="line">        outer.outerMethod(); </span><br><span class="line">        // 输出：</span><br><span class="line">        // 外部类字段：40</span><br><span class="line">        // 方法局部变量：50</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>匿名内部类:<br>特点：<br>–定义时必须立即创建实例，不能单独定义后再使用。<br>–隐式继承一个父类或实现一个接口（只能是一个）。<br>–作用域与局部内部类相同，且不能有构造方法（因无类名)。<br>示例代码：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// 定义一个接口</span><br><span class="line">interface Greeting &#123;</span><br><span class="line">    void sayHello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class OuterClass &#123;</span><br><span class="line">    public void test() &#123;</span><br><span class="line">        // 匿名内部类：实现Greeting接口</span><br><span class="line">        Greeting greeting = new Greeting() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void sayHello() &#123;</span><br><span class="line">                System.out.println(&quot;Hello from Anonymous Inner Class&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        greeting.sayHello(); // 输出：Hello from Anonymous Inner Class</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        new OuterClass().test();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>内部类的核心作用:<br>—封装性：内部类可隐藏在外部类中，仅外部类可见，减少对外部的暴露。<br>—访问便利性：直接访问外部类成员，无需通过 getter&#x2F;setter。<br>—逻辑关联性：将与外部类强相关的逻辑封装在一起，增强代码可读性和维护性（如集合框架中的Iterator实现类常作为内部类）。</p>
+<h2 id="二，内网穿透（NAT）"><a href="#二，内网穿透（NAT）" class="headerlink" title="二，内网穿透（NAT）"></a>二，内网穿透（NAT）</h2><p>1.目的：让外网能访问到本地服务器<br>NAT（Network Address Translation，网络地址转换）是一种网络设备，用于将一个或多个IP地址映射到另一个IP地址。NAT设备将内网中的多个IP地址映射到一个公共IP地址，从而实现外网访问内网。<br>实现方式：<br>–静态转换是指将内部网络的私有IP地址转换为公有IP地址，IP地址对是一对一<br>–动态转换是指将内部网络的私有IP地址转换为公有IP地址，IP地址对是一对多<br>–内部网络的所有主机均可共享一个合法外部IP地址实现对Internet的访问，从而可以最大限度地节约IP地址资源。同时又可隐藏网络内部的所有主机，有效避免来自internet的攻击。因此，目前网络中应用最多的就是端口多路复用方式。<br>–应用程序级网关技术（Application Level Gateway）ALG：传统的NAT技术只对IP层和传输层头部进行转换处理，ALG它能对这些应用程序在通信时所包含的地址信息也进行相应的NAT转换</p>
+<p>–实现工具有免费的可用 Ngrok 和NatApp等</p>
+<p>2.正向代理和反向代理核心区别总结：<br>–代理对象：正向代理代理客户端，反向代理代理服务器。<br>–隐藏对象：正向代理隐藏真实客户端，反向代理隐藏真实服务器。<br>–使用目的：正向代理侧重 “客户端突破访问限制”，反向代理侧重 “服务器优化性能、保障安全”。</p>
+<h2 id="三，Git的理解与使用"><a href="#三，Git的理解与使用" class="headerlink" title="三，Git的理解与使用"></a>三，Git的理解与使用</h2><p>1.git是一个分布式版本控制软件，用于管理代码的版本，gitHub是一个开源的代码托管平台，用于托管git仓库。<br>使用git提供自带的命令git bash,不使用cmd的原因：<br>–git bash 中，ls、cp、mkdr、vim等命令都有<br>–自带的命令行很空命令是和Linux命令都是一样的，操作方便</p>
+<p>2.git的基础使用<br>–git初始化(项目初始化成仓库)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>–在项目下运行命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+<p>git status文件有三种状态：<br>–红色：修改、创建、删除都是显示红色<br>–绿色：git add 添加之后变成绿色<br>–白色：git commit提交之后变成白色</p>
+<p>git add添加要管理的文件，命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;file&gt;</span><br><span class="line">git add file1  file2 ...   </span><br><span class="line">git add .  //推荐点表示，把当前文件夹下所有的文件他（会递归的把每一个子文件夹下的文件也同样管理起来）都统统管理起来，就是要把它们都变绿</span><br></pre></td></tr></table></figure>
+
+<p>3、git commit 把文件提交到仓库，命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m &quot;第一次提交&quot;</span><br></pre></td></tr></table></figure>
+<p>-m后面输入的是本次提交的说明<br>commit提交之后信息中文件变成白色 此时说明提交成功</p>
+<p>提交的时候用以下命令配置用户和邮箱的信息:告诉别人是谁提交的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.email &quot;you@example.com&quot;</span><br><span class="line">git config --global user.name &quot;Your Name&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>git log 查看提交（commit）的历史记录，命令：</p>
+<h2 id="四，Git的进阶与使用"><a href="#四，Git的进阶与使用" class="headerlink" title="四，Git的进阶与使用"></a>四，Git的进阶与使用</h2><p>1.版本回滚</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard  版本号   // 回滚到指定版本</span><br><span class="line">git reflog //查看所有的提交记录方便向前回滚和向后回滚</span><br></pre></td></tr></table></figure>
+
+<p>2.在不提交完整版本的情况下，临时 “冻结” 当前工作区和暂存区的修改，让工作区回到干净状态，以便进行分支切换、拉取代码、重置等操作，之后再恢复修改继续工<br>–git stash 把没有提交的代码暂存在某个地方，命令<br>–git stash pop 进行把暂存的代码拿回来</p>
+<p>3.分支、</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git branch &lt;分支名&gt; //创建分支</span><br><span class="line">git checkout &lt;分支名&gt;  //切换分支</span><br><span class="line">git merge &lt;分支名&gt;      //合并分支,在哪个分支，就是把这个分支名合并到当前分支。</span><br><span class="line">git branch -d &lt;分支名&gt;  //删除分支</span><br></pre></td></tr></table></figure>
+
+<p>一般的bug修复流程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">将dev 中现在正在开发的功能提交到dev</span><br><span class="line">git add .</span><br><span class="line">git commit -m “xxxxx”</span><br><span class="line">切换到主分支（master分支）</span><br><span class="line">git checkout master</span><br><span class="line">创建并切换到bug分支</span><br><span class="line">git branch bug</span><br><span class="line">git checkout bug</span><br><span class="line">在bug分支上进行修复</span><br><span class="line">git add .</span><br><span class="line">git commit -m “xxxx”</span><br><span class="line">切换回master分支，合并修复的bug分支，最后删除bug分支</span><br><span class="line">git checkout master</span><br><span class="line">git merge bug</span><br><span class="line">git branch -d bug</span><br><span class="line">查看当前有哪些分支</span><br><span class="line">git branch 或git branch -a 或git branch --all</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="五，远程仓库-多人协同开发"><a href="#五，远程仓库-多人协同开发" class="headerlink" title="五，远程仓库,多人协同开发"></a>五，远程仓库,多人协同开发</h2><p>1.gitee或github上创建版本存储仓库</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://gitee.com/zhr/test_git.git //添加远程仓库其中origin是我给这个仓库链接起的别名</span><br><span class="line"></span><br><span class="line">git push origin master   //把本地仓库推到远程存储仓库</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>2.当使用git clone 把代码从版本存储仓库下载后只有master分支,需要通过以下流程解决</p>
+<p>git pull<br>我们就可以通过以下流程进行切换到dev上进行开发：</p>
+<p>git branch dev： 创建一个dev分支<br>git checkout dev：切换到dev分支<br>git pull origin dev ：把远程存储仓库中的dev分支更新到现在的dev分支中，此时就是我们正在开发的代码</p>
+
+    </article>
+    
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="2025/11/17/学习打卡第四天/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
+    
+  </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8CJava%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">1.</span> <span class="toc-text">一，Java内部类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%EF%BC%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%EF%BC%88NAT%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">二，内网穿透（NAT）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%EF%BC%8CGit%E7%9A%84%E7%90%86%E8%A7%A3%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">三，Git的理解与使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%EF%BC%8CGit%E7%9A%84%E8%BF%9B%E9%98%B6%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">四，Git的进阶与使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%EF%BC%8C%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93-%E5%A4%9A%E4%BA%BA%E5%8D%8F%E5%90%8C%E5%BC%80%E5%8F%91"><span class="toc-number">5.</span> <span class="toc-text">五，远程仓库,多人协同开发</span></a></li></ol>
+      </div>
+      
+        <div class="catelogue catelogue-2">
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2025/11/16/学习打卡第三天/">打卡第三天</a>
+            </p>
+          
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true,"lazyload":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: '2025/11/17/学习打卡第四天/'
+  })
+</script>
+
+
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
+</script> 
+
+</div>
+      <div class="main-right-wrapper"><div class="main-right">
+  <div class="main-right--board">
+    <div class="main-right--title">
+      <h5>公告栏</h5>
+      <i class="iconfont icon-gonggao"></i>
+    </div>
+    <div class="main-right--content">
+      Hello~欢迎你们来到我的博客小站，希望能在这里收获到有用的东西！ 
+    </div>
+  </div>
+
+  <div id="aplayer" class="main-right--music"></div>
+
+  <div class="operate-items">
+    <div class="operate-item backtop">
+      <i class="iconfont icon-huidaodingbu"></i>
+      <span>回到顶部</span>
+    </div>
+    
+    <div class="operate-item turn-comment hidden">
+      <i class="iconfont icon-pinglun"></i>
+      <span>查看评论</span>
+    </div>
+    
+  </div>
+
+  <div class="main-right--site">
+    <div class="main-right--power">
+      <p>Power By <a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/">Hexo</a>.</p>
+      <p>Theme：<a target="_blank" rel="noopener" href="https://github.com/Aizener/hexo-theme-cola">Cola.</a></p>
+    </div>
+    <p class="main-right--refer"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/index"></a> </p>
+  </div>
+</div>
+
+<script>
+  function setOperateItem () {
+    const reg = /\d{4}\/\d{2}\/\d{2}\/.+/
+    const path = location.pathname
+    const operateDom = document.querySelector('.main-right .operate-items')
+    const commentDom = document.querySelector('.turn-comment')
+    const cateloguDom = document.querySelector('.article-catelogue > .article-catelogue--wrapper');
+
+    if (commentDom) {
+      if (reg.test(path) || path.match(/\/log\/.+/)) {
+        commentDom.classList.remove('hidden')
+        const newDom = operateDom.cloneNode(true);
+        const _backtopDom = newDom.querySelector('.backtop');
+        const _commentDom = newDom.querySelector('.turn-comment');
+        _backtopDom.addEventListener('click', () => backTopEvent());
+        _commentDom.addEventListener('click', () => commentDomEvent());
+        cateloguDom.appendChild(newDom);
+      } else {
+        commentDom.classList.add('hidden')
+      }
+    }
+  }
+
+  setOperateItem()
+  const musics = JSON.parse(`[{"name":"安河桥","artist":"宋冬野","url":"music/安河桥-宋冬野.mp3","cover":"https://img2.baidu.com/it/u=1260056724,1076343118&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"},{"name":"WindHill","artist":"纯音乐","url":"music/WindyandHill.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/md7748.jpg"},{"name":"some-where","artist":"纯音乐","url":"music/some-where.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/m353fhsd.jpg"},{"name":"城南花已开","artist":"纯音乐","url":"music/城南花已开.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/mhfdf.jpg"},{"name":"恐怖","artist":"纯音乐","url":"music/迷失森林.mp3","cover":"https://blogphotos-1339074592.cos.ap-singapore.myqcloud.com/mhostq.jpg"}]`)
+  const ap = new APlayer({
+    container: document.querySelector('#aplayer'),
+    audio: musics,
+  })
+
+  $(document).on('pjax:complete', function() {
+    setOperateItem()
+  })
+
+  document.querySelector('.backtop').addEventListener('click', () => {
+    backTopEvent();
+  })
+  const dom = document.querySelector('.turn-comment')
+  dom && dom.addEventListener('click', () => {
+    commentDomEvent();
+  })
+
+  function backTopEvent() {
+    document.documentElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  function commentDomEvent() {
+    const commentDom = document.querySelector('.comments-intro')
+    if (!commentDom) return
+    const top = commentDom.offsetTop, height = commentDom.offsetHeight
+    document.documentElement.scrollTo({
+      top: top - 2 * height,
+      behavior: 'smooth'
+    })
+  }
+</script></div>
+    </section>
+  </div>
+  <div id="progress" class="progress"></div>
+  <div id="gray" class="gray"></div>
+
+  <script>
+    function initScroll () {
+      document.addEventListener('scroll', () => {
+        const doc = document.documentElement
+        const scrollTop = doc.scrollTop
+        const pageHeight = doc.offsetHeight
+        const clientHeight = doc.clientHeight
+        const ratio = scrollTop / (pageHeight - clientHeight)
+        const progress = document.querySelector('#progress')
+        const avatarImg = document.querySelector('.main-left--avatar')
+        progress.style.width = (100 * ratio) + '%'
+        avatarImg.style.transform = `rotate(${360 * ratio}deg)`
+      })
+    }
+
+    const rootPath = "/"
+
+    const checkAndSetArticlePageLayout = () => {
+      const path = location.pathname.replace(rootPath, '');
+      if (
+        /^\/?\d{4}\/\d{2}\/\d{2}\/.*/.test(path) ||
+        /^log\/.+/.test(path)
+      ) {
+        $('.main-container, .main-right, .main-right-wrapper').addClass('is-article')
+      } else {
+        $('.main-container, .main-right, .main-right-wrapper').removeClass('is-article')
+      }
+    }
+
+    const gray = "none"
+    const setGrayStyle = () => {
+      if (gray === 'none') {
+        return
+      } else if (gray === 'index') {
+        location.pathname === '/' ? $('#gray').show() : $('#gray').hide()
+      } else if (gray === 'all') {
+        $('#gray').show()
+      }
+    }
+    setGrayStyle()
+
+
+    window.onload = function () {
+      checkAndSetArticlePageLayout()
+      setTimeout(() => {
+        $('#load').slideUp()
+        $('#container').slideToggle()
+        setTimeout(() => {
+          initScroll();
+        }, 500)
+      }, 500)
+    }
+    
+    let status = 0
+    // 对所有链接跳转事件绑定pjax容器container
+    $(document).pjax('a[target!=_blank]', '#main-container', {
+      container: '#main-container',
+      fragment: '#main-container',
+      timeout: 8000
+    })
+
+    $(document).on('pjax:start', function() {
+    })
+    $(document).on('pjax:complete', function() {
+      status = 0
+      $('.main-container').addClass('to-up').on('animationend', function() {
+        $(this).removeClass('to-up')
+      })
+      setGrayStyle()
+      checkAndSetArticlePageLayout()
+    })
+    $(document).on('pjax:popstate', function() {
+      status = -1
+      checkAndSetArticlePageLayout()
+    });
+  </script>
+</body>
+</html>
