@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZHR的全栈打卡第三天 | zhr&#39;s blog</title>
+  <title>ZHR的全栈学习记录 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/public.css" />
@@ -16,7 +16,7 @@
 
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `ZHR的全栈打卡第三天`
+    document.title = `ZHR的全栈学习记录`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -344,141 +344,111 @@
     </div>
   </div>
 </div></div>
-      <div id="main-container" class="main-container">
+      <div id="main-container" class="main-container"><link rel="stylesheet" href="/css/partial/index.css" />
 
 
-  <link rel="stylesheet" href="/css/partial/article.css" />
 
-<div class="article-container">
-  <div class="article">
-    <h1 class="article-title">打卡第三天</h1>
-    <div class="article-info">
-      <div class="article-info--item">
-        <div class="article-info--info">
-          
-          <div class="article-info--categories">
-            <span>分类：</span>
+<div class="index">
+  <div class="index-left">
+    
+      <div class="index-article">
+        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
+        <div class="index-article--box">
+          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第五天" />
+        </div>
+        <div class="index-article--content">
+          <a href="/2025/11/18/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%BA%94%E5%A4%A9/">打卡第五天 </a>
+          <div>
+            
+            
+              <p>
+                <a class="-link" href="/tags/JavaWeb-oss%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">JavaWeb/oss文件上传</a>
+              </p>
             
           </div>
-          
-          
-          <div class="article-info--tags">
-            <span>标签：</span>
-            <a class="tag-link" href="/tags/JavaWeb-ssh%E5%AF%86%E9%92%A5/" rel="tag">JavaWeb/ssh密钥</a>
-          </div>
-          
-          <p class="article-info--date">日期：2025-11-16 23:04:02</p>
+          <div class="bg"></div>
         </div>
-        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
       </div>
-    </div>
-    <article class="article-content markdown-body">
-      <h2 id="一，分页查询（PageHelper分页插件的使用及原理）"><a href="#一，分页查询（PageHelper分页插件的使用及原理）" class="headerlink" title="一，分页查询（PageHelper分页插件的使用及原理）"></a>一，分页查询（PageHelper分页插件的使用及原理）</h2><p>使用：<br>首先基于Maven在pom.xml文件功集成了PageHelper分页插件：<br>以tlias案例在服务层启动分页</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">在EmpServiceImpl.java中</span><br><span class="line">@Override</span><br><span class="line">public PageResult&lt;Emp&gt; page(Integer page, Integer pageSize) &#123;</span><br><span class="line">    // 启动分页，设置当前页和每页记录数</span><br><span class="line">    PageHelper.startPage(page, pageSize);</span><br><span class="line">    </span><br><span class="line">    // 执行普通的查询操作</span><br><span class="line">    List&lt;Emp&gt; empList = empMapper.list();</span><br><span class="line">    </span><br><span class="line">    // 将查询结果转换为Page对象以获取分页信息</span><br><span class="line">    Page&lt;Emp&gt; p = (Page&lt;Emp&gt;) empList;</span><br><span class="line">    </span><br><span class="line">    // 返回封装了总数和结果的PageResult对象</span><br><span class="line">    return new PageResult&lt;Emp&gt;(p.getTotal(), p.getResult());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>原理：<br>PageHelper拦截并改写SQL<br>这是PageHelper最核心的部分。虽然在代码中看不到，但PageHelper通过MyBatis拦截器机制工作：<br>PageHelper实现了MyBatis的Interceptor接口<br>当MyBatis准备执行SQL时，PageHelper拦截器会捕获这次执行<br>拦截器从ThreadLocal中获取之前设置的分页参数<br>根据分页参数和数据库类型（项目中是MySQL），动态改写原始SQL。</p>
-<h2 id="二-条件分页查询及优化"><a href="#二-条件分页查询及优化" class="headerlink" title="二,条件分页查询及优化"></a>二,条件分页查询及优化</h2><p>1.当controller 层接受前端请求参数时，<br>如果参数少，controller方法中可定义形参接受，<br>如果参数较多，可以在controller方法中定义一个对象接收</p>
-<p>2.条件查询优化，使用动态sql解决前端不同条件之间相互匹配。</p>
-<p>mybatis 动态SQL使用场景:随着用户输入或外部条件变化而变化<br>mybatis中使用<if>条件判断来动态拼接SQL<br><where>标签会根据查询条件，来生成where关键字，并会自动去除条件前面多余的and或者or</p>
-<h2 id="三，ssh密钥"><a href="#三，ssh密钥" class="headerlink" title="三，ssh密钥"></a>三，ssh密钥</h2><p>SSH 密钥主要用于免密码登录远程服务器或免密码操作代码仓库（如 GitHub），核心逻辑是 “公钥给服务端，私钥自己留”，以下以连接 GitHub和登录远程服务器为例说明：</p>
-<p>场景 1：为 GitHub 生成并配置专属 SSH 密钥<br>步骤 1：生成 SSH 密钥对<br>打开终端（Windows 用 Git Bash，Linux&#x2F;macOS 用系统终端），执行命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C &quot;你的邮箱地址&quot; -f ~/.ssh/id_rsa_github</span><br></pre></td></tr></table></figure>
-<p>-t rsa：指定密钥类型为 RSA；<br>-b 4096：密钥长度 4096 位（更安全）；<br>-C “你的邮箱地址”：添加注释（通常填 GitHub 绑定的邮箱，方便识别）；<br>-f <del>&#x2F;.ssh&#x2F;id_rsa_github：指定密钥文件名为 id_rsa_github（自定义命名，区分其他密钥）。<br>执行后会提示 “是否设置密码”（可直接回车跳过，即无密码；若设置，每次用密钥时需输入密码，更安全）。执行完毕后，</del>&#x2F;.ssh 目录下会生成 id_rsa_github（私钥）和 id_rsa_github.pub（公钥）。<br>步骤 2：将公钥添加到 GitHub<br>查看并复制公钥内容：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa_github.pub</span><br></pre></td></tr></table></figure>
-<p>复制终端输出的全部内容。<br>登录 GitHub，按以下路径操作：<br>头像 → Settings → SSH and GPG keys → New SSH key → 粘贴公钥 → 填写别名（如 “GitHub 密钥 - 笔记本”）→ 点击 Add SSH key。<br>步骤 3：测试 SSH 连接<br>执行命令测试认证：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-<p>若返回 Hi [你的GitHub用户名]! You’ve successfully authenticated…，说明配置成功。<br>场景 2：为远程服务器生成 SSH 密钥并免密码登录<br>步骤 1：生成 SSH 密钥对（若已有可跳过）<br>执行命令生成默认密钥对（文件名 id_rsa&#x2F;id_rsa.pub）：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096 -C &quot;你的备注信息&quot;</span><br></pre></td></tr></table></figure>
-<p>回车确认路径（默认 ~&#x2F;.ssh），按需设置密码（或直接回车跳过）。<br>步骤 2：将公钥上传到远程服务器<br>假设服务器 IP 为 192.168.1.100，用户名 user，执行命令：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub user@192.168.1.100</span><br><span class="line">-i ~/.ssh/id_rsa.pub：指定要上传的公钥文件；</span><br></pre></td></tr></table></figure>
-<p><a href="mailto:&#x75;&#x73;&#101;&#x72;&#64;&#x31;&#x39;&#50;&#46;&#49;&#x36;&#x38;&#x2e;&#x31;&#x2e;&#49;&#x30;&#x30;">&#x75;&#x73;&#101;&#x72;&#64;&#x31;&#x39;&#50;&#46;&#49;&#x36;&#x38;&#x2e;&#x31;&#x2e;&#49;&#x30;&#x30;</a>：服务器的 “用户名 @IP”。<br>执行后输入服务器密码，公钥会被自动添加到服务器的 ~&#x2F;.ssh&#x2F;authorized_keys 文件中。<br>步骤 3：免密码登录服务器<br>直接执行以下命令即可免密码登录：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh user@192.168.1.100</span><br></pre></td></tr></table></figure>
-<p>进阶：用 config 文件统一管理多密钥（可选）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">编辑 ~/.ssh/config 文件（若没有则创建），添加以下内容可简化命令：</span><br><span class="line">config</span><br><span class="line"># GitHub 专属密钥配置</span><br><span class="line">Host github.com</span><br><span class="line">    HostName github.com</span><br><span class="line">    User git</span><br><span class="line">    IdentityFile ~/.ssh/id_rsa_github  # 关联自定义密钥</span><br><span class="line"></span><br><span class="line"># 服务器1配置</span><br><span class="line">Host server1</span><br><span class="line">    HostName 192.168.1.100</span><br><span class="line">    User user</span><br><span class="line">    IdentityFile ~/.ssh/id_rsa  # 关联默认密钥</span><br><span class="line">    Port 22  # 服务器SSH端口，默认22，若修改需同步此处</span><br></pre></td></tr></table></figure>
-<p>配置后，操作 GitHub 时可直接用 git clone <a href="mailto:&#x67;&#105;&#x74;&#64;&#x67;&#105;&#116;&#104;&#x75;&#x62;&#x2e;&#99;&#x6f;&#x6d;">&#x67;&#105;&#x74;&#64;&#x67;&#105;&#116;&#104;&#x75;&#x62;&#x2e;&#99;&#x6f;&#x6d;</a>:xxx&#x2F;xxx.git（自动匹配 id_rsa_github）；登录服务器可直接执行 ssh server1，无需记忆 IP 和用户名。<br>通过以上命令步骤，你可以完成从 “密钥生成” 到 “服务端配置” 再到 “免密使用” 的全流程操作</p>
-
-    </article>
-    
-    <div class="read-nums">
-      <!-- id 将作为查询条件 -->
-      <span id="2025/11/16/学习打卡第三天/" class="leancloud_visitors" data-flag-title="Your Article Title">
-        <em class="post-meta-item-text">浏览量</em>
-        <i class="leancloud-visitors-count"></i>
-      </span>
-    </div>
-    <div class="comments-intro">
-      <h2>评论区</h2>
-      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
-    </div>
-    <div id="vcomments" class="vcomments"></div>
     
   </div>
-  <div class="article-catelogue">
-    <div class="article-catelogue--wrapper">
-      <div class="catelogue catelogue-1">
-        <h3>目录</h3>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8C%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2%EF%BC%88PageHelper%E5%88%86%E9%A1%B5%E6%8F%92%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8F%8A%E5%8E%9F%E7%90%86%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">一，分页查询（PageHelper分页插件的使用及原理）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E6%9D%A1%E4%BB%B6%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2%E5%8F%8A%E4%BC%98%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">二,条件分页查询及优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%EF%BC%8Cssh%E5%AF%86%E9%92%A5"><span class="toc-number">3.</span> <span class="toc-text">三，ssh密钥</span></a></li></ol>
-      </div>
+  <div class="index-center">
+    
+  </div>
+  <div class="index-right">
+    <div class="index-right-wrapper">
       
-        <div class="catelogue catelogue-2">
-          
-            <p>
-              <span>上一篇：</span>
-              <a href="/2025/11/17/学习打卡第四天/">打卡四天</a>
-            </p>
-           
-          
-            <p>
-              <span>下一篇</span>
-              <a href="/2025/11/14/学习打卡第二天/">打卡第二天</a>
-            </p>
-          
-        </div>
-      
+      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb-ssh%E5%AF%86%E9%92%A5/" rel="tag">JavaWeb&#x2F;ssh密钥</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb-oss%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">JavaWeb&#x2F;oss文件上传</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java-NAT-Git/" rel="tag">Java&#x2F;NAT&#x2F;Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">2025年11月</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">2025年05月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/02/">2025年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">2025年01月</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 </div>
 
 
 <script>
-  // var定义，避免pjax重新进来造成的重复声明错误
-  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true,"lazyload":true}')
-  new Valine({
-    el: '#vcomments',
-    appId: config.appId,
-    appKey: config.appKey,
-    placeholder: config.placeholder,
-    meta: config.meta,
-    recordIP: config.recordIP,
-    visitor: config.visitor,
-    enableQQ: config.enableQQ,
-    path: '2025/11/16/学习打卡第三天/'
-  })
-</script>
+  var allImgBoxs = document.querySelectorAll('.index-article--box');
+  var windowHeight = window.innerHeight;
+  var boxs = Array.from(allImgBoxs);
+  var timer = null;
+  boxs.forEach((box, idx) => {
+    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
+      box.classList.add('img-loading');
+    } else {
+      const imgDom = box.querySelector('img');
+      imgDom.src = imgDom.dataset.cover;
+    }
+  });
 
+  function scrollFn() {
+    if (timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      loadImage();
+      timer = null;
+    }, 100)
+  }
 
-<script>
-  $(document).on('pjax:complete', function() {
-    const tocs = document.querySelector('.toc')
-    const links = tocs ? tocs.querySelectorAll('a') : []
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        const href = decodeURIComponent(e.href)
-        href.search(/#(.*)/)
-        const id = RegExp.$1
-        const target = document.querySelector('#' + id)
-        const top = target.offsetTop
-        document.documentElement.scrollTo({
-          top: top - 100,
-          behavior: 'smooth'
-        })
-        e.preventDefault()
-      })
-    })
-  })
-</script> 
+  setTimeout(() => {
+    loadImage();
+  }, 100);
+  if (!window.loadedImage) {
+    document.addEventListener('scroll', scrollFn);
+  }
 
-</div>
+  function loadImage() {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop;
+    if (boxs.every(box => box.loadedImage)) {
+      document.removeEventListener('scroll', scrollFn);
+      window.loadedImage = 1;
+      return;
+    }
+    boxs.forEach((box, idx) => {
+      if (box.loadedImage) {
+        return;
+      }
+      if (box.getBoundingClientRect().top < windowHeight) {
+        const imgDom = box.querySelector('img');
+        imgDom.src = imgDom.dataset.cover;
+        // 图片成功加载
+        imgDom.onload = () => {
+          box.classList.remove('img-loading');
+          box.loadedImage = true;
+          if (!window.loadImageSet) {
+            window.loadImageSet = [];
+          }
+          window.loadImageSet.push(idx);
+        }
+        // 图片加载失败
+        imgDom.onerror = () => {
+          box.classList.remove('img-loading');
+          box.classList.add('img-error');
+          imgDom.src = '/imgs/404.png';
+        }
+      }
+    });
+  }
+</script> </div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
     <div class="main-right--title">
