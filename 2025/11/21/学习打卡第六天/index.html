@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ZHR的全栈学习记录 | zhr&#39;s blog</title>
+  <title>ZHR的全栈打卡第六天 | zhr&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="shortcut icon" href="/imgs/shortcut-icon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/public.css" />
@@ -16,7 +16,7 @@
 
   <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
   <script>
-    document.title = `ZHR的全栈学习记录`
+    document.title = `ZHR的全栈打卡第六天`
   </script>
 <meta name="generator" content="Hexo 7.3.0"></head>
 
@@ -344,210 +344,129 @@
     </div>
   </div>
 </div></div>
-      <div id="main-container" class="main-container"><link rel="stylesheet" href="/css/partial/archive.css" />
+      <div id="main-container" class="main-container">
 
 
+  <link rel="stylesheet" href="/css/partial/article.css" />
 
-    <link rel="stylesheet" href="/css/partial/index.css" />
-
-
-
-<div class="index">
-  <div class="index-left">
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第六天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/21/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E5%85%AD%E5%A4%A9/">打卡第六天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a>
-              </p>
+<div class="article-container">
+  <div class="article">
+    <h1 class="article-title">打卡第六天</h1>
+    <div class="article-info">
+      <div class="article-info--item">
+        <div class="article-info--info">
+          
+          <div class="article-info--categories">
+            <span>分类：</span>
             
           </div>
-          <div class="bg"></div>
-        </div>
-      </div>
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡四天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/17/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E5%9B%9B%E5%A4%A9/">打卡四天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/Java-NAT-Git/" rel="tag">Java/NAT/Git</a>
-              </p>
-            
+          
+          
+          <div class="article-info--tags">
+            <span>标签：</span>
+            <a class="tag-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a>
           </div>
-          <div class="bg"></div>
+          
+          <p class="article-info--date">日期：2025-11-21 23:00:15</p>
         </div>
+        <img src="/imgs/default-cover.webp" alt="" class="article-cover">
       </div>
+    </div>
+    <article class="article-content markdown-body">
+      <h2 id="一，后端简单删除功能实现"><a href="#一，后端简单删除功能实现" class="headerlink" title="一，后端简单删除功能实现"></a>一，后端简单删除功能实现</h2><p>一.Tlias案例删除员工功能整体实现架构</p>
+<ol>
+<li>控制层 (EmpController.java)<br>使用 @DeleteMapping 注解处理 DELETE 请求<br>接收前端传递的员工 ID 列表作为参数<br>调用服务层完成删除操作<br>返回统一的结果响应格式</li>
+<li>服务层 (EmpServiceImpl.java)<br>实现了 EmpService 接口的 delete 方法<br>使用 @Transactional(rollbackFor &#x3D; Exception.class) 注解保证事务性<br>同时删除员工主信息及相关的工作经历信息，确保数据一致性</li>
+<li>数据访问层 (EmpMapper.java 和 EmpExprMapper.java)<br>EmpMapper 处理员工基本信息的删除<br>EmpExprMapper 处理员工工作经历信息的删除<br>使用 MyBatis 的 XML 配置实现批量删除 SQL 语句</li>
+</ol>
+<p>二.修改员工时的查询回显<br>功能实现流程<br>1.前端请求：通过 GET &#x2F;emps&#x2F;{id} 请求获取指定ID的员工信息<br>2.控制器层：EmpController 接收请求，调用服务层方法<br>3.服务层：EmpServiceImpl 调用数据访问层方法获取员工信息<br>4.数据访问层：EmpMapper 执行MyBatis查询，关联查询员工基本信息和工作经历<br>5.结果封装：通过MyBatis的resultMap将查询结果映射到Emp对象，包括其关联的exprList工作经历列表<br>6.响应返回：通过统一结果封装类Result返回查询结果<br>重要注解说明<br>注解<br>@GetMapping(“&#x2F;{id}”)作用于<br>EmpController.getInfo()方法<br>指定该方法处理GET请求，路径为&#x2F;emps&#x2F;{id}，其中{id}是路径参数<br>@PathVariable作用于<br>getInfo()方法的id参数<br>将URL路径中的{id}变量绑定到方法参数上</p>
+<p>MyBatis映射配置要点<br>关联查询：使用left join连接员工表(emp)和工作经历表(emp_expr)<br>ResultMap映射：<br>使用<collection>标签映射一对多关系(一个员工对应多个工作经历)<br>通过property&#x3D;”exprList”指定映射到Emp类的exprList属性<br>使用别名方式解决字段名和属性名不一致问题(如ee.id ee_id)<br>数据模型结构<br>Emp类包含员工基本信息和List<EmpExpr>类型的工作经历列表<br>EmpExpr类表示员工的单条工作经历信息<br>通过以上实现，员工查询回显功能能够完整地返回员工基本信息及其所有工作经历信息</p>
+<p>三.Tlias案例 修改员工，修改数据<br>整体架构流程<br>1.前端发起请求：发送PUT请求到 &#x2F;emps 接口，携带需要更新的员工数据<br>2.控制层处理：EmpController 接收请求并解析参数<br>3.业务逻辑层：EmpService 处理业务逻辑<br>4.数据访问层：EmpMapper 执行数据库更新操作<br>5.返回结果：通过统一响应格式返回操作结果</p>
+<ol>
+<li>控制层 (EmpController)<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@PutMapping</span><br><span class="line">public Result update(@RequestBody Emp emp) &#123;</span><br><span class="line">    log.info(&quot;更新员工信息: &#123;&#125;&quot;, emp);</span><br><span class="line">    empService.update(emp);</span><br><span class="line">    return Result.success();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>服务层 (EmpService 和 EmpServiceImpl)<br>服务层需要定义和实现更新方法：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void update(Emp emp);</span><br></pre></td></tr></table></figure>
+实现类中需要设置更新时间并调用Mapper：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void update(Emp emp) &#123;</span><br><span class="line">    emp.setUpdateTime(LocalDateTime.now());</span><br><span class="line">    empMapper.updateById(emp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>数据访问层 (EmpMapper)<br>实现类中需要设置更新时间并调用Mapper：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void updateById(Emp emp);</span><br></pre></td></tr></table></figure></li>
+<li>MyBatis映射 (EmpMapper.xml)<br>XML中使用动态SQL实现部分字段更新</li>
+</ol>
+<h2 id="二，分析Tlias案例中全局异常处理器的使用"><a href="#二，分析Tlias案例中全局异常处理器的使用" class="headerlink" title="二，分析Tlias案例中全局异常处理器的使用"></a>二，分析Tlias案例中全局异常处理器的使用</h2><p>分析Tlias案例中全局异常处理器的使用<br>当系统中发生未被捕获的异常时，会由这个全局异常处理器处理<br>如果是DuplicateKeyException类型，则执行对应的处理方法，解析出重复的值并返回给前端<br>如果是其他类型的异常，则执行通用的异常处理方法，记录日志并返回默认错误信息<br>使用的重要注解<br>@RestControllerAdvice<br>这是最重要的注解，它组合了@ControllerAdvice和@ResponseBody的功能：<br>将该类标记为全局异常处理类<br>可以定义全局的@ExceptionHandler方法<br>自动将返回结果转换为JSON格式响应<br>@ExceptionHandler<br>用于标记具体的异常处理方法：<br>第一个@ExceptionHandler方法没有指定具体异常类型，处理所有Exception及其子类异常<br>第二个@ExceptionHandler专门处理DuplicateKeyException异常，这种针对特定异常的处理具有更高的优先级<br>@Slf4j<br>Lombok提供的日志注解，自动生成日志对象，便于在代码中记录日志信息。<br>特点分析<br>分层处理机制：通过多个@ExceptionHandler方法实现了不同粒度的异常处理<br>用户友好错误提示：特别是对于重复键异常，能够解析出具体哪个值重复，并给出明确提示<br>统一响应格式：所有异常最终都会封装成Result对象返回，保持接口响应格式的一致性</p>
+
+    </article>
     
-      <div class="index-article">
-        <!-- <img class="index-article--cover" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第二天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/14/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%BA%8C%E5%A4%A9/">打卡第二天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/Java/" rel="tag">Java</a>
-              </p>
-            
-          </div>
-          <div class="bg"></div>
-        </div>
-      </div>
+    <div class="read-nums">
+      <!-- id 将作为查询条件 -->
+      <span id="2025/11/21/学习打卡第六天/" class="leancloud_visitors" data-flag-title="Your Article Title">
+        <em class="post-meta-item-text">浏览量</em>
+        <i class="leancloud-visitors-count"></i>
+      </span>
+    </div>
+    <div class="comments-intro">
+      <h2>评论区</h2>
+      <p>欢迎你留下宝贵的意见，昵称输入QQ号会显示QQ头像哦~</p>
+    </div>
+    <div id="vcomments" class="vcomments"></div>
     
   </div>
-  <div class="index-center">
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" data-cover="" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第五天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/18/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%BA%94%E5%A4%A9/">打卡第五天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/JavaWeb-oss%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">JavaWeb/oss文件上传</a>
-              </p>
-            
-          </div>
-          <div class="bg"></div>
-        </div>
+  <div class="article-catelogue">
+    <div class="article-catelogue--wrapper">
+      <div class="catelogue catelogue-1">
+        <h3>目录</h3>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%EF%BC%8C%E5%90%8E%E7%AB%AF%E7%AE%80%E5%8D%95%E5%88%A0%E9%99%A4%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">一，后端简单删除功能实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%EF%BC%8C%E5%88%86%E6%9E%90Tlias%E6%A1%88%E4%BE%8B%E4%B8%AD%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">二，分析Tlias案例中全局异常处理器的使用</span></a></li></ol>
       </div>
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" data-cover="" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第三天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/16/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%B8%89%E5%A4%A9/">打卡第三天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/JavaWeb-ssh%E5%AF%86%E9%92%A5/" rel="tag">JavaWeb/ssh密钥</a>
-              </p>
-            
-          </div>
-          <div class="bg"></div>
-        </div>
-      </div>
-    
-      <div class="index-article">
-        <!-- <img class="index-article--cover" data-cover="" src="/imgs/default-cover.webp" alt=""> -->
-        <div class="index-article--box">
-          <img class="index-article--cover" data-cover="imgs/default-cover.webp" alt="打卡第一天" />
-        </div>
-        <div class="index-article--content">
-          <a href="/2025/11/13/%E5%AD%A6%E4%B9%A0%E6%89%93%E5%8D%A1%E7%AC%AC%E4%B8%80%E5%A4%A9/">打卡第一天 </a>
-          <div>
-            
-            
-              <p>
-                <a class="-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a>
-              </p>
-            
-          </div>
-          <div class="bg"></div>
-        </div>
-      </div>
-    
-  </div>
-  <div class="index-right">
-    <div class="index-right-wrapper">
       
-      <ul class="tags" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb-ssh%E5%AF%86%E9%92%A5/" rel="tag">JavaWeb&#x2F;ssh密钥</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb-oss%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">JavaWeb&#x2F;oss文件上传</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaWeb/" rel="tag">JavaWeb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java-NAT-Git/" rel="tag">Java&#x2F;NAT&#x2F;Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/11/">2025年11月</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">2025年05月</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/02/">2025年02月</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/01/">2025年01月</a><span class="archive-list-count">1</span></li></ul>
+        <div class="catelogue catelogue-2">
+           
+          
+            <p>
+              <span>下一篇</span>
+              <a href="/2025/11/18/学习打卡第五天/">打卡第五天</a>
+            </p>
+          
+        </div>
+      
     </div>
   </div>
 </div>
 
 
 <script>
-  var allImgBoxs = document.querySelectorAll('.index-article--box');
-  var windowHeight = window.innerHeight;
-  var boxs = Array.from(allImgBoxs);
-  var timer = null;
-  boxs.forEach((box, idx) => {
-    if (!window.loadImageSet || !window.loadImageSet.includes(idx)) {
-      box.classList.add('img-loading');
-    } else {
-      const imgDom = box.querySelector('img');
-      imgDom.src = imgDom.dataset.cover;
-    }
-  });
+  // var定义，避免pjax重新进来造成的重复声明错误
+  var config = JSON.parse('{"enable":true,"appId":"Pf8zCXGEH1qsprnWfikVVujL-gzGzoHsz","appKey":"qOqoiUHhH1TGtLRUYURkLRQX","placeholder":"请留下你宝贵的意见吧~","meta":["nick"],"recordIP":true,"visitor":true,"enableQQ":true,"lazyload":true}')
+  new Valine({
+    el: '#vcomments',
+    appId: config.appId,
+    appKey: config.appKey,
+    placeholder: config.placeholder,
+    meta: config.meta,
+    recordIP: config.recordIP,
+    visitor: config.visitor,
+    enableQQ: config.enableQQ,
+    path: '2025/11/21/学习打卡第六天/'
+  })
+</script>
 
-  function scrollFn() {
-    if (timer) {
-      return;
-    }
-    timer = setTimeout(() => {
-      loadImage();
-      timer = null;
-    }, 100)
-  }
 
-  setTimeout(() => {
-    loadImage();
-  }, 100);
-  if (!window.loadedImage) {
-    document.addEventListener('scroll', scrollFn);
-  }
-
-  function loadImage() {
-    const doc = document.documentElement;
-    const scrollTop = doc.scrollTop;
-    if (boxs.every(box => box.loadedImage)) {
-      document.removeEventListener('scroll', scrollFn);
-      window.loadedImage = 1;
-      return;
-    }
-    boxs.forEach((box, idx) => {
-      if (box.loadedImage) {
-        return;
-      }
-      if (box.getBoundingClientRect().top < windowHeight) {
-        const imgDom = box.querySelector('img');
-        imgDom.src = imgDom.dataset.cover;
-        // 图片成功加载
-        imgDom.onload = () => {
-          box.classList.remove('img-loading');
-          box.loadedImage = true;
-          if (!window.loadImageSet) {
-            window.loadImageSet = [];
-          }
-          window.loadImageSet.push(idx);
-        }
-        // 图片加载失败
-        imgDom.onerror = () => {
-          box.classList.remove('img-loading');
-          box.classList.add('img-error');
-          imgDom.src = '/imgs/404.png';
-        }
-      }
-    });
-  }
+<script>
+  $(document).on('pjax:complete', function() {
+    const tocs = document.querySelector('.toc')
+    const links = tocs ? tocs.querySelectorAll('a') : []
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        const href = decodeURIComponent(e.href)
+        href.search(/#(.*)/)
+        const id = RegExp.$1
+        const target = document.querySelector('#' + id)
+        const top = target.offsetTop
+        document.documentElement.scrollTo({
+          top: top - 100,
+          behavior: 'smooth'
+        })
+        e.preventDefault()
+      })
+    })
+  })
 </script> 
+
 </div>
       <div class="main-right-wrapper"><div class="main-right">
   <div class="main-right--board">
